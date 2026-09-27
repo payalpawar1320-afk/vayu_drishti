@@ -24,3 +24,8 @@ data/processed/cache/
 Thumbs.db
 .vscode/
 .idea/
+
+# Presentation and slides (kept local only)
+*.pptx
+*.ppt
+
