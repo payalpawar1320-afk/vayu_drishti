@@ -51,12 +51,8 @@ export class StudyController {
       }
       this.trackMap = L.map('chart-track-map', mapOptions);
       L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-        { maxZoom: 16 }
-      ).addTo(this.trackMap);
-      L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-        { maxZoom: 16, opacity: 0.8 }
+        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+        { maxZoom: 18, subdomains: 'abcd' }
       ).addTo(this.trackMap);
 
       Object.values(this.trackLayers).forEach(l => l.addTo(this.trackMap));
@@ -70,12 +66,8 @@ export class StudyController {
       }
       this.obsVsPredMap = L.map('chart-obs-vs-pred', mapOptions);
       L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-        { maxZoom: 16 }
-      ).addTo(this.obsVsPredMap);
-      L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-        { maxZoom: 16, opacity: 0.8 }
+        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+        { maxZoom: 18, subdomains: 'abcd' }
       ).addTo(this.obsVsPredMap);
 
       Object.values(this.comparisonLayers).forEach(l => l.addTo(this.obsVsPredMap));

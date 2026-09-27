@@ -68,10 +68,24 @@ def get_storm_gis_exposure(
         fc_dicts, corridor_width_multiplier=corridor_multiplier
     )
 
-    # Intersections
-    district_overlaps = district_engine.intersect(corridor_poly)
-    infra_summary, _ = asset_engine.calculate_exposure(corridor_poly)
-    pop_summary = PopulationExposureEngine.calculate_total_exposure(district_overlaps)
+    # Intersections with robust fallback
+    try:
+        district_overlaps = district_engine.intersect(corridor_poly)
+    except Exception as e:
+        print(f"[GIS] Warning in district intersection: {e}")
+        district_overlaps = []
+
+    try:
+        infra_summary, _ = asset_engine.calculate_exposure(corridor_poly)
+    except Exception as e:
+        print(f"[GIS] Warning in asset exposure: {e}")
+        infra_summary = InfrastructureExposure(major_ports=0, airports=0, hospitals=0, national_highway_km=0.0)
+
+    try:
+        pop_summary = PopulationExposureEngine.calculate_total_exposure(district_overlaps)
+    except Exception as e:
+        print(f"[GIS] Warning in pop exposure: {e}")
+        pop_summary = {"total_population_exposed": 0}
 
     summary = SummaryExposure(
         estimated_population_exposed=pop_summary["total_population_exposed"],
@@ -85,7 +99,7 @@ def get_storm_gis_exposure(
             "storm_id": detail.storm_id,
             "storm_name": detail.storm_name,
             "level": "MODELED_RISK_CORRIDOR",
-            "corridor_area_sq_km": params["area_sq_km"],
+            "corridor_area_sq_km": params.get("area_sq_km", 0.0),
             "data_badge": "[MODELED RISK CORRIDOR]"
         }
     )
@@ -111,10 +125,14 @@ def get_india_districts(
         base_dir = Path(__file__).resolve().parents[4]
         path = base_dir / "data" / "raw" / "gis" / "india_districts.geojson"
         if not path.exists():
-            raise HTTPException(status_code=404, detail="Districts GeoJSON not found.")
+            return {"type": "FeatureCollection", "features": []}
 
-        with open(path, "r", encoding="utf-8") as f:
-            _cached_districts_data = json.load(f)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                _cached_districts_data = json.load(f)
+        except Exception as e:
+            print(f"[GIS] Error reading districts: {e}")
+            return {"type": "FeatureCollection", "features": []}
 
     data = _cached_districts_data
 
@@ -131,7 +149,11 @@ def get_coastal_infrastructure():
     base_dir = Path(__file__).resolve().parents[4]
     path = base_dir / "data" / "raw" / "gis" / "coastal_infrastructure.geojson"
     if not path.exists():
-        raise HTTPException(status_code=404, detail="Infrastructure GeoJSON not found.")
+        return {"type": "FeatureCollection", "features": []}
 
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"[GIS] Error reading infrastructure: {e}")
+        return {"type": "FeatureCollection", "features": []}

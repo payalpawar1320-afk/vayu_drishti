@@ -23,7 +23,9 @@ class AssetExposureEngine:
 
     def _load_dataset(self):
         if not self.infra_path.exists():
-            raise FileNotFoundError(f"Infrastructure GeoJSON not found at {self.infra_path}")
+            print(f"[AssetExposureEngine] Warning: Infrastructure GeoJSON not found at {self.infra_path}, using empty dataset")
+            self._gdf = gpd.GeoDataFrame(columns=['category', 'name', 'district', 'state', 'geometry'])
+            return
         self._gdf = gpd.read_file(self.infra_path)
 
     def calculate_exposure(self, corridor_polygon: Polygon) -> TupleExposure:

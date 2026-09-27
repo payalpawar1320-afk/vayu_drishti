@@ -220,22 +220,14 @@ class CycloneApp {
         console.warn('Infrastructure data unavailable:', e);
       }
 
-      // Default: historic
-      if (this.liveStormsList && this.liveStormsList.length > 0) {
-        this.currentMode = 'live';
-        document.getElementById('btn-mode-live')?.classList.add('active');
-        document.getElementById('btn-mode-historic')?.classList.remove('active');
-        document.getElementById('source-mode-label').textContent = 'Live';
-        this.populateStormDropdown();
-        await this.selectStorm(this.liveStormsList[0].storm_id);
-      } else {
-        this.currentMode = 'historic';
-        document.getElementById('btn-mode-historic')?.classList.add('active');
-        document.getElementById('btn-mode-live')?.classList.remove('active');
-        document.getElementById('source-mode-label').textContent = 'Historical replay';
-        this.populateStormDropdown();
-        await this.selectStorm('AMPHAN');
-      }
+      // Default to historic mode (Cyclone Amphan - Bay of Bengal benchmark)
+      this.currentMode = 'historic';
+      document.getElementById('btn-mode-historic')?.classList.add('active');
+      document.getElementById('btn-mode-live')?.classList.remove('active');
+      const modeLbl = document.getElementById('source-mode-label');
+      if (modeLbl) modeLbl.textContent = 'Historical replay';
+      this.populateStormDropdown();
+      await this.selectStorm('AMPHAN');
 
       // Initial Comparison
       if (this.compareController) {
@@ -377,27 +369,35 @@ class CycloneApp {
         }
       }
 
-      const gis = await API.getGISExposure(this.currentStormId, stepIndex, 1.0);
-      this.currentGISData = gis;
-      this.mapManager.renderRiskCorridor(gis.risk_corridor_geojson);
-      this.mapManager.renderDistrictOverlaps(gis.intersected_districts);
+      try {
+        const gis = await API.getGISExposure(this.currentStormId, stepIndex, 1.0);
+        this.currentGISData = gis;
+        if (gis && gis.risk_corridor_geojson) {
+          this.mapManager.renderRiskCorridor(gis.risk_corridor_geojson);
+        }
+        if (gis && gis.intersected_districts) {
+          this.mapManager.renderDistrictOverlaps(gis.intersected_districts);
+        }
 
-      // Update exposure panel
-      const districts = gis.intersected_districts || [];
-      this.setText('val-districts-count', `${districts.length} districts`);
-      const totalPop = districts.reduce((s, d) => s + (d.population_exposed || 0), 0);
-      this.setText('val-population', totalPop > 0
-        ? `~${(totalPop / 1000000).toFixed(2)} million (est.)`
-        : '—'
-      );
+        // Update exposure panel
+        const districts = gis?.intersected_districts || [];
+        this.setText('val-districts-count', `${districts.length} districts`);
+        const totalPop = districts.reduce((s, d) => s + (d.population_exposed || 0), 0);
+        this.setText('val-population', totalPop > 0
+          ? `~${(totalPop / 1000000).toFixed(2)} million (est.)`
+          : '—'
+        );
 
-      // Base case in simulation panel
-      this.setText('base-districts',  `${districts.length}`);
-      this.setText('base-population', totalPop > 0
-        ? `~${(totalPop / 1000000).toFixed(2)} M`
-        : '—'
-      );
-      this.setText('base-infra', `${gis.infrastructure_at_risk?.length || 0} items`);
+        // Base case in simulation panel
+        this.setText('base-districts',  `${districts.length}`);
+        this.setText('base-population', totalPop > 0
+          ? `~${(totalPop / 1000000).toFixed(2)} M`
+          : '—'
+        );
+        this.setText('base-infra', `${gis?.infrastructure_at_risk?.length || 0} items`);
+      } catch (gisErr) {
+        console.warn('GIS exposure data unavailable for this step:', gisErr);
+      }
 
       // Eye Structure Analysis & Map Overlay
       try {

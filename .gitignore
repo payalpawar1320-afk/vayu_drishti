@@ -13,7 +13,9 @@ venv/
 ENV/
 
 # Data storage (as per architecture specification)
-data/raw/
+data/raw/era5/
+data/raw/hursat_avhrr/
+data/raw/hursat_b1/
 data/processed/cache/
 *.pkl
 *.geojson.gz

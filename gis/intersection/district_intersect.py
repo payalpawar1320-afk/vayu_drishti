@@ -54,7 +54,10 @@ class DistrictIntersectionEngine:
                 print(f"[DistrictIntersectionEngine] Warning: Failed to load pkl cache: {e}")
 
         if not self.districts_path.exists():
-            raise FileNotFoundError(f"Districts GeoJSON not found at {self.districts_path}")
+            print(f"[DistrictIntersectionEngine] Warning: Districts GeoJSON not found at {self.districts_path}, using empty dataset")
+            DistrictIntersectionEngine._cached_gdf = gpd.GeoDataFrame(columns=['STATE_NORM', 'DISTRICT_NORM', 'POPULATION', 'geometry'])
+            DistrictIntersectionEngine._cached_pop_data = {}
+            return
         
         print(f"[DistrictIntersectionEngine] Loading {self.districts_path} (generating fast cache)...")
         gdf = gpd.read_file(self.districts_path)

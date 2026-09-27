@@ -48,24 +48,16 @@ export class CompareController {
     // Initialize Map 1
     this.map1 = L.map('compare-map-1', mapOptions);
     L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 16 }
-    ).addTo(this.map1);
-    L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 16, opacity: 0.75 }
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      { maxZoom: 18, subdomains: 'abcd' }
     ).addTo(this.map1);
     this.layer1 = L.layerGroup().addTo(this.map1);
 
     // Initialize Map 2
     this.map2 = L.map('compare-map-2', mapOptions);
     L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 16 }
-    ).addTo(this.map2);
-    L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 16, opacity: 0.75 }
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      { maxZoom: 18, subdomains: 'abcd' }
     ).addTo(this.map2);
     this.layer2 = L.layerGroup().addTo(this.map2);
   }

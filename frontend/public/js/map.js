@@ -47,13 +47,30 @@ export class CycloneMapManager {
 
     this.satelliteTileLayers = {};
 
-    // Base tactical dark canvases to prevent transparent/black tile gaps
-    const makeDarkCanvas = () => L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 16 }
+    // 1. Esri High-Resolution World Imagery (Full planetary textures, deep blue oceans, zero blank gaps)
+    const makeSatelliteCanvas = () => L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 18,
+        attribution: 'Source: Esri, Maxar, Earthstar Geographics'
+      }
+    );
+    this.basemaps['esri-sat'] = makeSatelliteCanvas();
+
+    // 2. Carto Voyager (Vivid, crystal-clear geographical map with oceans, cities & terrain)
+    this.basemaps['voyager'] = L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      {
+        maxZoom: 18,
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+      }
     );
 
-    // 1. NASA GIBS MODIS True-Color Real Satellite Layer
+    // 3. Clean Light Grey Basemap
+    this.basemaps['light-grey'] = this.basemaps['voyager'];
+
+    // 4. NASA GIBS MODIS True-Color Real Satellite Layer (backed by Esri Imagery so never blackout)
     this.satelliteTileLayers['nasa-truecolor'] = L.tileLayer(
       'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
       {
@@ -63,9 +80,9 @@ export class CycloneMapManager {
         attribution: 'Real Satellite: NASA EOSDIS GIBS (MODIS Terra 250m)'
       }
     );
-    this.basemaps['nasa-truecolor'] = L.layerGroup([makeDarkCanvas(), this.satelliteTileLayers['nasa-truecolor']]);
+    this.basemaps['nasa-truecolor'] = L.layerGroup([makeSatelliteCanvas(), this.satelliteTileLayers['nasa-truecolor']]);
 
-    // 2. NASA GIBS VIIRS True-Color
+    // 5. NASA GIBS VIIRS True-Color
     this.satelliteTileLayers['nasa-viirs'] = L.tileLayer(
       'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/{date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
       {
@@ -75,9 +92,9 @@ export class CycloneMapManager {
         attribution: 'Real Satellite: NASA EOSDIS GIBS (Suomi NPP VIIRS)'
       }
     );
-    this.basemaps['nasa-viirs'] = L.layerGroup([makeDarkCanvas(), this.satelliteTileLayers['nasa-viirs']]);
+    this.basemaps['nasa-viirs'] = L.layerGroup([makeSatelliteCanvas(), this.satelliteTileLayers['nasa-viirs']]);
 
-    // 3. NASA Shortwave Infrared / False Color (Level 9 250m, high contrast cloud/core structure)
+    // 6. NASA Shortwave Infrared / False Color
     this.satelliteTileLayers['nasa-ir'] = L.tileLayer(
       'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_Bands721/default/{date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
       {
@@ -88,27 +105,12 @@ export class CycloneMapManager {
         attribution: 'NASA GIBS Infrared / False Color (MODIS Bands 7-2-1)'
       }
     );
-    this.basemaps['nasa-ir'] = L.layerGroup([makeDarkCanvas(), this.satelliteTileLayers['nasa-ir']]);
+    this.basemaps['nasa-ir'] = L.layerGroup([makeSatelliteCanvas(), this.satelliteTileLayers['nasa-ir']]);
 
-    // 4. Tactical Dark Canvas Basemap (Free, high-performance, no watermark)
-    this.basemaps['dark'] = makeDarkCanvas();
-
-    // 5. Esri High-Resolution World Imagery
-    this.basemaps['esri-sat'] = L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      {
-        maxZoom: 18,
-        attribution: 'Source: Esri, Maxar, Earthstar Geographics'
-      }
-    );
-
-    // 6. Clean Light Grey Basemap (Free, high-performance, no watermark)
-    this.basemaps['light-grey'] = L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-      {
-        maxZoom: 16,
-        attribution: 'Esri, HERE, Garmin, &copy; OpenStreetMap contributors'
-      }
+    // 7. Tactical Dark Canvas Basemap
+    this.basemaps['dark'] = L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      { maxZoom: 18, subdomains: 'abcd', attribution: '&copy; CARTO' }
     );
 
     // Reference boundary overlay (countries & coastlines) - crisp, no watermark
@@ -121,7 +123,7 @@ export class CycloneMapManager {
       }
     ).addTo(this.map);
 
-    // Default to clean Light Grey & White basemap
+    // Default to clean, beautiful Carto Voyager / Light Grey basemap
     this.activeBasemapMode = 'light-grey';
     this.basemaps[this.activeBasemapMode].addTo(this.map);
 
