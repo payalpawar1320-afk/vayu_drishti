@@ -1,9 +1,12 @@
+from __future__ import annotations
 from pathlib import Path
 from typing import Optional, Dict, Any, List, Tuple
 import geopandas as gpd
 from shapely.geometry import Polygon, Point, LineString
 
 from backend.app.schemas.gis import InfrastructureExposure
+
+TupleExposure = Tuple[InfrastructureExposure, List[Dict[str, Any]]]
 
 class AssetExposureEngine:
     """
@@ -79,5 +82,3 @@ class AssetExposureEngine:
         )
 
         return summary, detailed_assets
-
-TupleExposure = Tuple[InfrastructureExposure, List[Dict[str, Any]]]
