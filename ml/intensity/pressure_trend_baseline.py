@@ -1,9 +1,13 @@
-from typing import List, Dict, Any, Optional
+from __future__ import annotations
+from typing import List, Dict, Any, Optional, Tuple
 from backend.app.schemas.prediction import IntensityTrendInfo, ExplainabilityInfo
 from backend.app.schemas.storm import BestTrackPoint
 from backend.app.schemas.evolution import EvolutionFingerprint
 
+TupleTrend = Tuple[IntensityTrendInfo, ExplainabilityInfo]
+
 class PhysicalIntensityTrendBaseline:
+
     """
     Physical Pressure Tendency & Environmental Intensity Baseline Model.
     Predicts STRENGTHENING, STABLE, or WEAKENING with explainability factors.
@@ -106,4 +110,3 @@ class PhysicalIntensityTrendBaseline:
 
         return trend_info, explain_info
 
-TupleTrend = tuple[IntensityTrendInfo, ExplainabilityInfo]
