@@ -1,0 +1,877 @@
+{
+  "split_strategy": "STORM_LEVEL_TEMPORAL_ISOLATION (ZERO_LEAKAGE)",
+  "citation": "Section 41 of SPEC.md",
+  "train_count": 136,
+  "val_count": 5,
+  "test_count": 3,
+  "train_storms": [
+    {
+      "storm_id": "2020353N06129",
+      "storm_name": "KROVANH",
+      "year": 2020,
+      "points": 65
+    },
+    {
+      "storm_id": "2010305N06105",
+      "storm_name": "JAL",
+      "year": 2010,
+      "points": 60
+    },
+    {
+      "storm_id": "1952289N15128",
+      "storm_name": "VAE",
+      "year": 1952,
+      "points": 71
+    },
+    {
+      "storm_id": "2024238N25077",
+      "storm_name": "ASNA",
+      "year": 2024,
+      "points": 75
+    },
+    {
+      "storm_id": "1962254N11123",
+      "storm_name": "BABE:BABS",
+      "year": 1962,
+      "points": 63
+    },
+    {
+      "storm_id": "2022338N05100",
+      "storm_name": "MANDOUS",
+      "year": 2022,
+      "points": 53
+    },
+    {
+      "storm_id": "2007314N10093",
+      "storm_name": "SIDR",
+      "year": 2007,
+      "points": 48
+    },
+    {
+      "storm_id": "1983287N19091",
+      "storm_name": "HERBERT",
+      "year": 1983,
+      "points": 12
+    },
+    {
+      "storm_id": "2001361N01106",
+      "storm_name": "VAMEI",
+      "year": 2001,
+      "points": 47
+    },
+    {
+      "storm_id": "1981283N07132",
+      "storm_name": "FABIAN",
+      "year": 1981,
+      "points": 51
+    },
+    {
+      "storm_id": "2025329N05100",
+      "storm_name": "SENYAR",
+      "year": 2025,
+      "points": 42
+    },
+    {
+      "storm_id": "1961291N12120",
+      "storm_name": "ANITA",
+      "year": 1961,
+      "points": 33
+    },
+    {
+      "storm_id": "1987219N08155",
+      "storm_name": "CARY",
+      "year": 1987,
+      "points": 141
+    },
+    {
+      "storm_id": "1985284N05159",
+      "storm_name": "DOT",
+      "year": 1985,
+      "points": 93
+    },
+    {
+      "storm_id": "2009344N06085",
+      "storm_name": "WARD",
+      "year": 2009,
+      "points": 38
+    },
+    {
+      "storm_id": "1992314N08141",
+      "storm_name": "FORREST",
+      "year": 1992,
+      "points": 109
+    },
+    {
+      "storm_id": "1977243N14129",
+      "storm_name": "CARLA",
+      "year": 1977,
+      "points": 51
+    },
+    {
+      "storm_id": "2019302N11118",
+      "storm_name": "BULBUL:MATMO",
+      "year": 2019,
+      "points": 109
+    },
+    {
+      "storm_id": "2021335N08096",
+      "storm_name": "JAWAD",
+      "year": 2021,
+      "points": 45
+    },
+    {
+      "storm_id": "2015157N13069",
+      "storm_name": "ASHOBAA",
+      "year": 2015,
+      "points": 49
+    },
+    {
+      "storm_id": "2020327N08086",
+      "storm_name": "NIVAR",
+      "year": 2020,
+      "points": 43
+    },
+    {
+      "storm_id": "1977194N06142",
+      "storm_name": "SARAH",
+      "year": 1977,
+      "points": 77
+    },
+    {
+      "storm_id": "2024329N04089",
+      "storm_name": "FENGAL",
+      "year": 2024,
+      "points": 87
+    },
+    {
+      "storm_id": "2018279N11069",
+      "storm_name": "LUBAN",
+      "year": 2018,
+      "points": 75
+    },
+    {
+      "storm_id": "1978217N16129",
+      "storm_name": "BESS:BONNIE",
+      "year": 1978,
+      "points": 73
+    },
+    {
+      "storm_id": "2014297N11062",
+      "storm_name": "NILOFAR",
+      "year": 2014,
+      "points": 73
+    },
+    {
+      "storm_id": "2017333N06082",
+      "storm_name": "OCKHI",
+      "year": 2017,
+      "points": 57
+    },
+    {
+      "storm_id": "2019264N19071",
+      "storm_name": "HIKAA:HIKKA",
+      "year": 2019,
+      "points": 45
+    },
+    {
+      "storm_id": "1973317N08122",
+      "storm_name": "THELMA",
+      "year": 1973,
+      "points": 45
+    },
+    {
+      "storm_id": "2015301N11065",
+      "storm_name": "CHAPALA",
+      "year": 2015,
+      "points": 61
+    },
+    {
+      "storm_id": "2018136N11054",
+      "storm_name": "SAGAR",
+      "year": 2018,
+      "points": 37
+    },
+    {
+      "storm_id": "1996312N14125",
+      "storm_name": "ERNIE",
+      "year": 1996,
+      "points": 95
+    },
+    {
+      "storm_id": "2008117N11090",
+      "storm_name": "NARGIS",
+      "year": 2008,
+      "points": 69
+    },
+    {
+      "storm_id": "2010151N14065",
+      "storm_name": "PHET",
+      "year": 2010,
+      "points": 63
+    },
+    {
+      "storm_id": "2013324N07103",
+      "storm_name": "LEHAR",
+      "year": 2013,
+      "points": 75
+    },
+    {
+      "storm_id": "1971267N12130",
+      "storm_name": "DELLA",
+      "year": 1971,
+      "points": 61
+    },
+    {
+      "storm_id": "1970324N05143",
+      "storm_name": "RUTH",
+      "year": 1970,
+      "points": 79
+    },
+    {
+      "storm_id": "2013322N13090",
+      "storm_name": "HELEN",
+      "year": 2013,
+      "points": 43
+    },
+    {
+      "storm_id": "2025298N11089",
+      "storm_name": "MONTHA",
+      "year": 2025,
+      "points": 39
+    },
+    {
+      "storm_id": "2011302N13062",
+      "storm_name": "KEILA",
+      "year": 2011,
+      "points": 57
+    },
+    {
+      "storm_id": "1966233N13340",
+      "storm_name": "FAITH",
+      "year": 1966,
+      "points": 191
+    },
+    {
+      "storm_id": "1965352N09111",
+      "storm_name": "GLORIA",
+      "year": 1965,
+      "points": 39
+    },
+    {
+      "storm_id": "2023293N12089",
+      "storm_name": "HAMOON",
+      "year": 2023,
+      "points": 41
+    },
+    {
+      "storm_id": "2009313N11072",
+      "storm_name": "PHYAN",
+      "year": 2009,
+      "points": 20
+    },
+    {
+      "storm_id": "1975258N12132",
+      "storm_name": "ALICE",
+      "year": 1975,
+      "points": 53
+    },
+    {
+      "storm_id": "2011360N09088",
+      "storm_name": "THANE",
+      "year": 2011,
+      "points": 41
+    },
+    {
+      "storm_id": "2007133N15091",
+      "storm_name": "AKASH",
+      "year": 2007,
+      "points": 18
+    },
+    {
+      "storm_id": "2005338N09093",
+      "storm_name": "FANOOS",
+      "year": 2005,
+      "points": 69
+    },
+    {
+      "storm_id": "2014159N12068",
+      "storm_name": "NANAUK",
+      "year": 2014,
+      "points": 51
+    },
+    {
+      "storm_id": "2004319N10134",
+      "storm_name": "MUIFA",
+      "year": 2004,
+      "points": 99
+    },
+    {
+      "storm_id": "2010136N09057",
+      "storm_name": "BANDU",
+      "year": 2010,
+      "points": 59
+    },
+    {
+      "storm_id": "2018365N08115",
+      "storm_name": "PABUK",
+      "year": 2018,
+      "points": 67
+    },
+    {
+      "storm_id": "1969241N10127",
+      "storm_name": "DORIS",
+      "year": 1969,
+      "points": 47
+    },
+    {
+      "storm_id": "2017147N14087",
+      "storm_name": "MORA",
+      "year": 2017,
+      "points": 29
+    },
+    {
+      "storm_id": "2018263N17089",
+      "storm_name": "DAYE",
+      "year": 2018,
+      "points": 22
+    },
+    {
+      "storm_id": "1964269N12142",
+      "storm_name": "BILLIE",
+      "year": 1964,
+      "points": 67
+    },
+    {
+      "storm_id": "2017104N08085",
+      "storm_name": "MAARUTHA",
+      "year": 2017,
+      "points": 25
+    },
+    {
+      "storm_id": "1990272N11121",
+      "storm_name": "IRA",
+      "year": 1990,
+      "points": 51
+    },
+    {
+      "storm_id": "1995233N16115",
+      "storm_name": "LOIS",
+      "year": 1995,
+      "points": 79
+    },
+    {
+      "storm_id": "2022126N07095",
+      "storm_name": "ASANI",
+      "year": 2022,
+      "points": 63
+    },
+    {
+      "storm_id": "2017232N19130",
+      "storm_name": "HATO",
+      "year": 2017,
+      "points": 45
+    },
+    {
+      "storm_id": "1992188N07156",
+      "storm_name": "ELI",
+      "year": 1992,
+      "points": 73
+    },
+    {
+      "storm_id": "1962292N11119",
+      "storm_name": "HARRIET",
+      "year": 1962,
+      "points": 63
+    },
+    {
+      "storm_id": "2015309N14067",
+      "storm_name": "MEGH",
+      "year": 2015,
+      "points": 49
+    },
+    {
+      "storm_id": "1971189N12130",
+      "storm_name": "KIM",
+      "year": 1971,
+      "points": 55
+    },
+    {
+      "storm_id": "2006114N08090",
+      "storm_name": "MALA",
+      "year": 2006,
+      "points": 45
+    },
+    {
+      "storm_id": "1998343N08114",
+      "storm_name": "GIL",
+      "year": 1998,
+      "points": 37
+    },
+    {
+      "storm_id": "1987219N08134",
+      "storm_name": "BETTY",
+      "year": 1987,
+      "points": 85
+    },
+    {
+      "storm_id": "1972244N12123",
+      "storm_name": "ELSIE",
+      "year": 1972,
+      "points": 61
+    },
+    {
+      "storm_id": "1993336N05164",
+      "storm_name": "MANNY",
+      "year": 1993,
+      "points": 119
+    },
+    {
+      "storm_id": "1985281N02144",
+      "storm_name": "CECIL",
+      "year": 1985,
+      "points": 77
+    },
+    {
+      "storm_id": "2005262N13127",
+      "storm_name": "DAMREY",
+      "year": 2005,
+      "points": 73
+    },
+    {
+      "storm_id": "2005257N15120",
+      "storm_name": "VICENTE",
+      "year": 2005,
+      "points": 39
+    },
+    {
+      "storm_id": "1965187N08144",
+      "storm_name": "FREDA",
+      "year": 1965,
+      "points": 85
+    },
+    {
+      "storm_id": "1997298N06140",
+      "storm_name": "LINDA",
+      "year": 1997,
+      "points": 125
+    },
+    {
+      "storm_id": "2024295N15092",
+      "storm_name": "DANA",
+      "year": 2024,
+      "points": 39
+    },
+    {
+      "storm_id": "2020326N11063",
+      "storm_name": "GATI",
+      "year": 2020,
+      "points": 33
+    },
+    {
+      "storm_id": "2008317N11089",
+      "storm_name": "KHAI-MUK",
+      "year": 2008,
+      "points": 37
+    },
+    {
+      "storm_id": "2016295N13089",
+      "storm_name": "KYANT",
+      "year": 2016,
+      "points": 67
+    },
+    {
+      "storm_id": "2006329N06150",
+      "storm_name": "DURIAN",
+      "year": 2006,
+      "points": 123
+    },
+    {
+      "storm_id": "2018314N12093",
+      "storm_name": "GAJA",
+      "year": 2018,
+      "points": 76
+    },
+    {
+      "storm_id": "1954231N10159",
+      "storm_name": "IDA",
+      "year": 1954,
+      "points": 105
+    },
+    {
+      "storm_id": "2023292N11063",
+      "storm_name": "TEJ",
+      "year": 2023,
+      "points": 43
+    },
+    {
+      "storm_id": "1992198N13135",
+      "storm_name": "GARY",
+      "year": 1992,
+      "points": 71
+    },
+    {
+      "storm_id": "2022295N13093",
+      "storm_name": "SITRANG",
+      "year": 2022,
+      "points": 27
+    },
+    {
+      "storm_id": "2009104N13088",
+      "storm_name": "BIJLI",
+      "year": 2009,
+      "points": 33
+    },
+    {
+      "storm_id": "2012297N11067",
+      "storm_name": "MURJAN",
+      "year": 2012,
+      "points": 28
+    },
+    {
+      "storm_id": "2025266N11137",
+      "storm_name": "BUALOI",
+      "year": 2025,
+      "points": 63
+    },
+    {
+      "storm_id": "2018347N07089",
+      "storm_name": "PHETHAI",
+      "year": 2018,
+      "points": 39
+    },
+    {
+      "storm_id": "1965226N17116",
+      "storm_name": "NADINE",
+      "year": 1965,
+      "points": 55
+    },
+    {
+      "storm_id": "2016138N10081",
+      "storm_name": "ROANU",
+      "year": 2016,
+      "points": 41
+    },
+    {
+      "storm_id": "2016335N07088",
+      "storm_name": "NADA",
+      "year": 2016,
+      "points": 23
+    },
+    {
+      "storm_id": "2023317N10094",
+      "storm_name": "MIDHILI",
+      "year": 2023,
+      "points": 39
+    },
+    {
+      "storm_id": "2015207N22091",
+      "storm_name": "KOMEN",
+      "year": 2015,
+      "points": 60
+    },
+    {
+      "storm_id": "1964316N13117",
+      "storm_name": "KATE",
+      "year": 1964,
+      "points": 75
+    },
+    {
+      "storm_id": "2023334N08088",
+      "storm_name": "MICHAUNG",
+      "year": 2023,
+      "points": 49
+    },
+    {
+      "storm_id": "1986228N19120",
+      "storm_name": "WAYNE",
+      "year": 1986,
+      "points": 177
+    },
+    {
+      "storm_id": "1964256N17141",
+      "storm_name": "TILDA",
+      "year": 1964,
+      "points": 105
+    },
+    {
+      "storm_id": "2021267N18094",
+      "storm_name": "GULAB:SHAHEEN-GU",
+      "year": 2021,
+      "points": 85
+    },
+    {
+      "storm_id": "1962327N05144",
+      "storm_name": "LUCY",
+      "year": 1962,
+      "points": 69
+    },
+    {
+      "storm_id": "2016341N08092",
+      "storm_name": "VARDAH",
+      "year": 2016,
+      "points": 103
+    },
+    {
+      "storm_id": "2013339N09084",
+      "storm_name": "MADI",
+      "year": 2013,
+      "points": 63
+    },
+    {
+      "storm_id": "1972335N08116",
+      "storm_name": "SALLY",
+      "year": 1972,
+      "points": 66
+    },
+    {
+      "storm_id": "2021264N13119",
+      "storm_name": "DIANMU",
+      "year": 2021,
+      "points": 41
+    },
+    {
+      "storm_id": "1979205N10148",
+      "storm_name": "HOPE",
+      "year": 1979,
+      "points": 137
+    },
+    {
+      "storm_id": "1989305N07105",
+      "storm_name": "GAY",
+      "year": 1989,
+      "points": 79
+    },
+    {
+      "storm_id": "2025275N22068",
+      "storm_name": "SHAKHTI",
+      "year": 2025,
+      "points": 47
+    },
+    {
+      "storm_id": "1984169N20137",
+      "storm_name": "WYNNE",
+      "year": 1984,
+      "points": 83
+    },
+    {
+      "storm_id": "1961125N11096",
+      "storm_name": "WINNIE",
+      "year": 1961,
+      "points": 39
+    },
+    {
+      "storm_id": "2007151N14072",
+      "storm_name": "GONU",
+      "year": 2007,
+      "points": 63
+    },
+    {
+      "storm_id": "1961249N14342",
+      "storm_name": "DEBBIE",
+      "year": 1961,
+      "points": 108
+    },
+    {
+      "storm_id": "1951272N20274",
+      "storm_name": "HOW",
+      "year": 1951,
+      "points": 104
+    },
+    {
+      "storm_id": "2013130N04093",
+      "storm_name": "MAHASEN:VIYARU",
+      "year": 2013,
+      "points": 57
+    },
+    {
+      "storm_id": "2009143N17089",
+      "storm_name": "AILA",
+      "year": 2009,
+      "points": 29
+    },
+    {
+      "storm_id": "1995292N08150",
+      "storm_name": "YVETTE",
+      "year": 1995,
+      "points": 75
+    },
+    {
+      "storm_id": "2005330N09096",
+      "storm_name": "BAAZ",
+      "year": 2005,
+      "points": 63
+    },
+    {
+      "storm_id": "1994206N22107",
+      "storm_name": "AMY",
+      "year": 1994,
+      "points": 59
+    },
+    {
+      "storm_id": "2020335N06090",
+      "storm_name": "BUREVI",
+      "year": 2020,
+      "points": 47
+    },
+    {
+      "storm_id": "2008329N09082",
+      "storm_name": "NISHA",
+      "year": 2008,
+      "points": 31
+    },
+    {
+      "storm_id": "1964291N11143",
+      "storm_name": "GEORGIA",
+      "year": 1964,
+      "points": 73
+    },
+    {
+      "storm_id": "2006262N19069",
+      "storm_name": "MUKDA",
+      "year": 2006,
+      "points": 59
+    },
+    {
+      "storm_id": "2010293N17093",
+      "storm_name": "GIRI",
+      "year": 2010,
+      "points": 37
+    },
+    {
+      "storm_id": "2019296N15066",
+      "storm_name": "KYAAR:KYARR",
+      "year": 2019,
+      "points": 93
+    },
+    {
+      "storm_id": "2019335N05058",
+      "storm_name": "PAWAN",
+      "year": 2019,
+      "points": 57
+    },
+    {
+      "storm_id": "2023129N08091",
+      "storm_name": "MOCHA",
+      "year": 2023,
+      "points": 51
+    },
+    {
+      "storm_id": "2025233N15126",
+      "storm_name": "KAJIKI",
+      "year": 2025,
+      "points": 47
+    },
+    {
+      "storm_id": "2025331N06083",
+      "storm_name": "DITWAH",
+      "year": 2025,
+      "points": 49
+    },
+    {
+      "storm_id": "1978262N14135",
+      "storm_name": "KIT",
+      "year": 1978,
+      "points": 77
+    },
+    {
+      "storm_id": "2020153N13072",
+      "storm_name": "NISARGA",
+      "year": 2020,
+      "points": 29
+    },
+    {
+      "storm_id": "2019160N11073",
+      "storm_name": "VAYU",
+      "year": 2019,
+      "points": 77
+    },
+    {
+      "storm_id": "2018141N08059",
+      "storm_name": "MEKUNU",
+      "year": 2018,
+      "points": 49
+    },
+    {
+      "storm_id": "2012301N11087",
+      "storm_name": "NILAM",
+      "year": 2012,
+      "points": 45
+    },
+    {
+      "storm_id": "2010137N10090",
+      "storm_name": "LAILA",
+      "year": 2010,
+      "points": 41
+    },
+    {
+      "storm_id": "2008298N16085",
+      "storm_name": "RASHMI",
+      "year": 2008,
+      "points": 25
+    },
+    {
+      "storm_id": "2024145N14087",
+      "storm_name": "REMAL",
+      "year": 2024,
+      "points": 40
+    },
+    {
+      "storm_id": "2019301N05081",
+      "storm_name": "MAHA",
+      "year": 2019,
+      "points": 111
+    }
+  ],
+  "val_storms": [
+    {
+      "storm_id": "2023156N10067",
+      "storm_name": "BIPARJOY",
+      "year": 2023,
+      "points": 113
+    },
+    {
+      "storm_id": "2021143N15090",
+      "storm_name": "YAAS",
+      "year": 2021,
+      "points": 39
+    },
+    {
+      "storm_id": "2014279N11096",
+      "storm_name": "HUDHUD",
+      "year": 2014,
+      "points": 66
+    },
+    {
+      "storm_id": "2013281N12098",
+      "storm_name": "PHAILIN",
+      "year": 2013,
+      "points": 55
+    },
+    {
+      "storm_id": "2018281N14088",
+      "storm_name": "TITLI",
+      "year": 2018,
+      "points": 40
+    }
+  ],
+  "test_storms": [
+    {
+      "storm_id": "2020136N10088",
+      "storm_name": "AMPHAN",
+      "year": 2020,
+      "points": 51
+    },
+    {
+      "storm_id": "2019116N02090",
+      "storm_name": "FANI",
+      "year": 2019,
+      "points": 71
+    },
+    {
+      "storm_id": "2021133N10071",
+      "storm_name": "TAUKTAE",
+      "year": 2021,
+      "points": 49
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "model_architecture": "Deep Multi-Horizon Sequence Neural Network (MLP 128-64-32)",
+  "train_samples": 6912,
+  "test_samples": 135,
+  "test_storms": [
+    "AMPHAN",
+    "FANI",
+    "TAUKTAE"
+  ],
+  "test_track_metrics": {
+    "6h": {
+      "mae_km": 15.68,
+      "rmse_km": 17.99,
+      "min_error_km": 2.73,
+      "max_error_km": 51.27,
+      "lat_mae_deg": 0.097,
+      "lon_mae_deg": 0.09,
+      "samples_count": 135
+    },
+    "12h": {
+      "mae_km": 28.09,
+      "rmse_km": 32.23,
+      "min_error_km": 2.81,
+      "max_error_km": 71.65,
+      "lat_mae_deg": 0.17,
+      "lon_mae_deg": 0.158,
+      "samples_count": 135
+    },
+    "24h": {
+      "mae_km": 58.43,
+      "rmse_km": 66.35,
+      "min_error_km": 6.28,
+      "max_error_km": 146.09,
+      "lat_mae_deg": 0.323,
+      "lon_mae_deg": 0.351,
+      "samples_count": 135
+    },
+    "48h": {
+      "mae_km": 134.94,
+      "rmse_km": 154.54,
+      "min_error_km": 13.14,
+      "max_error_km": 383.79,
+      "lat_mae_deg": 0.8,
+      "lon_mae_deg": 0.752,
+      "samples_count": 135
+    }
+  },
+  "scientific_status": "EVALUATED_AGAINST_GROUND_TRUTH"
+}

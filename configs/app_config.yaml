@@ -1,0 +1,36 @@
+# Application Configuration
+# Multi-Source Cyclone Evolution & Impact Intelligence System
+
+app:
+  title: "Multi-Source Cyclone Evolution & Impact Intelligence System"
+  version: "1.0.0"
+  environment: "development"
+  debug: true
+  api_prefix: "/api/v1"
+
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  gis_data: "data/raw/gis"
+  metadata_dir: "data/metadata"
+  models_dir: "models"
+
+basins:
+  primary: "NI" # North Indian Ocean
+  sub_basins:
+    - "BB" # Bay of Bengal
+    - "AS" # Arabian Sea
+
+gis:
+  default_uncertainty_base_km: 40.0
+  hourly_expansion_km: 2.5
+  spatial_crs: "EPSG:4326"
+  projected_crs: "EPSG:3857" # Web Mercator for accurate metric buffers
+
+simulation:
+  max_track_shift_km: 200.0
+  max_corridor_multiplier: 3.0
+
+cache:
+  enable_offline_cache: true
+  cache_dir: "data/processed/gis_cache"

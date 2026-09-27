@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAYU-DRISHTI — Cyclone Evolution & Impact Intelligence System</title>
+  <meta name="description" content="Multi-source satellite and environmental data for cyclone monitoring and research. Historical replay, track analysis, and scenario modelling.">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/css/styles.css?v=23">
+</head>
+<body>
+
+  <!-- =====================================================================
+       GLOBAL HEADER
+       ===================================================================== -->
+  <header class="app-header" id="app-header">
+    <div class="header-brand">
+      <img src="/img/vayu_drishti_symbol.png" alt="VAYU-DRISHTI Emblem" class="brand-logo-icon">
+      <div class="brand-text-block">
+        <h1 class="brand-title">VAYU-DRISHTI</h1>
+        <span class="brand-subtitle">Satellite-based Atmospheric Observation &amp; Cyclone Intelligence System</span>
+      </div>
+    </div>
+
+    <nav class="header-nav" id="main-nav">
+      <button class="nav-btn active" data-page="home" id="nav-home">Home</button>
+      <button class="nav-btn" data-page="monitor" id="nav-monitor">Monitor</button>
+      <button class="nav-btn" data-page="study" id="nav-study">Study</button>
+      <button class="nav-btn" data-page="compare" id="nav-compare">Compare</button>
+      <button class="nav-btn" data-page="simulation" id="nav-simulation">Simulation</button>
+      <button class="nav-btn" data-page="data" id="nav-data">Data</button>
+    </nav>
+
+    <div class="header-status">
+      <div class="data-mode-toggle" id="data-mode-toggle">
+        <button class="mode-toggle-btn active" id="btn-mode-live" data-mode="live">
+          <span class="live-dot"></span> Live data
+        </button>
+        <button class="mode-toggle-btn" id="btn-mode-historic" data-mode="historic">
+          Historical
+        </button>
+      </div>
+
+      <!-- Quick Guide button in upper right corner -->
+      <button class="btn-guide-header" id="btn-open-guide" title="Open User Guide">
+        <svg class="guide-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>Guide</span>
+      </button>
+
+      <!-- Authority Session Controls (Visible only when logged in) -->
+      <div class="auth-header-controls" id="auth-header-controls">
+        <div class="auth-badge-pill" id="auth-user-pill" style="display: none;">
+          <span class="auth-badge-dot"></span>
+          <span id="auth-user-designation">NDMA Official</span>
+        </div>
+        <button class="btn-header-logout" id="btn-header-logout" style="display: none;" title="Logout from Authority Command">
+          Logout
+        </button>
+      </div>
+
+      <!-- Live Indian Standard Time (IST) Digital Clock -->
+      <div class="header-clock" id="clock-ist" title="Indian Standard Time (UTC+05:30)">--:--:-- IST</div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       PAGE: HOME (Neat UX, Compact, Data-First, No Bloat)
+       ===================================================================== -->
+  <div id="page-home" class="page active">
+    <div class="home-container">
+
+      <!-- Hero Section -->
+      <section class="home-hero">
+        <div class="hero-title-row">
+          <img src="/img/vayu_drishti_symbol.png" alt="VAYU-DRISHTI Emblem" class="hero-title-symbol">
+          <h2 class="hero-title">VAYU-DRISHTI</h2>
+        </div>
+        <p class="hero-subtitle">Satellite-based Atmospheric Observation &amp; Cyclone Intelligence System</p>
+        <p class="hero-motto">&ldquo;Observe the storm. Understand its evolution. Anticipate what comes next.&rdquo;</p>
+        <p class="hero-summary">
+          An integrated platform combining multi-sensor satellite observations, historical storm records, and environmental reanalysis for tropical cyclone monitoring, track forecasting, and exposure assessment.
+        </p>
+
+        <div class="hero-actions">
+          <button class="hero-btn-citizen" id="btn-home-citizen" title="Direct access for coastal residents (No login needed)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Citizen Safety View (No Login)</span>
+          </button>
+          <button class="hero-btn-authority" id="btn-home-authority" title="Restricted to Disaster Management Officials">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Authority Login</span>
+          </button>
+          <button class="hero-btn-primary" id="btn-go-monitor">
+            <span>Authority Dashboard</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <button class="hero-btn-secondary" id="btn-home-guide">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>User Guide</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Operational Capabilities / Interactive Cards -->
+      <section class="home-modules-section">
+        <div class="section-header-compact">
+          <span class="section-tag">System Modules</span>
+          <h3>Operational Capabilities</h3>
+        </div>
+
+        <div class="home-cards-grid">
+          <div class="home-card" data-nav-target="monitor">
+            <div class="home-card-header">
+              <div class="card-header-left">
+                <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#52766C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span class="card-num">01</span>
+              </div>
+              <span class="card-badge">GIS &amp; Tracking</span>
+            </div>
+            <h4 class="home-card-title">Monitor</h4>
+            <p class="home-card-desc">Interactive spatial tracking of observed and predicted cyclone paths with wind radii and coastal impact zones.</p>
+            <span class="home-card-link">Launch Monitor &rarr;</span>
+          </div>
+
+          <div class="home-card" data-nav-target="study">
+            <div class="home-card-header">
+              <div class="card-header-left">
+                <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#52766C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+                <span class="card-num">02</span>
+              </div>
+              <span class="card-badge">Atmospheric Physics</span>
+            </div>
+            <h4 class="home-card-title">Study</h4>
+            <p class="home-card-desc">Step through storm evolution milestones (48h, 24h, 12h pre-peak) with SST, wind shear, and pressure trends.</p>
+            <span class="home-card-link">Explore Lifecycle &rarr;</span>
+          </div>
+
+          <div class="home-card" data-nav-target="compare">
+            <div class="home-card-header">
+              <div class="card-header-left">
+                <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#52766C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span class="card-num">03</span>
+              </div>
+              <span class="card-badge">Historical Benchmark</span>
+            </div>
+            <h4 class="home-card-title">Compare</h4>
+            <p class="home-card-desc">Side-by-side benchmark of two cyclones across duration, central pressure, track curvature, and landfall severity.</p>
+            <span class="home-card-link">Compare Storms &rarr;</span>
+          </div>
+
+          <div class="home-card" data-nav-target="simulation">
+            <div class="home-card-header">
+              <div class="card-header-left">
+                <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#52766C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                <span class="card-num">04</span>
+              </div>
+              <span class="card-badge">What-If Analysis</span>
+            </div>
+            <h4 class="home-card-title">Simulation</h4>
+            <p class="home-card-desc">Shift predicted landfall corridors and adjust risk radii to re-estimate district exposure and population at risk.</p>
+            <span class="home-card-link">Run Simulation &rarr;</span>
+          </div>
+
+          <div class="home-card" data-nav-target="data">
+            <div class="home-card-header">
+              <div class="card-header-left">
+                <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#52766C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                <span class="card-num">05</span>
+              </div>
+              <span class="card-badge">Ingest Feeds</span>
+            </div>
+            <h4 class="home-card-title">Data</h4>
+            <p class="home-card-desc">Browse scientific provenance: NOAA IBTrACS, HURSAT-B1, ECMWF ERA5, ISRO MOSDAC, and WorldPop grids.</p>
+            <span class="home-card-link">View Data Catalog &rarr;</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Operational Feeds Strip -->
+      <section class="home-status-strip">
+        <div class="strip-item">
+          <span class="strip-dot ok"></span>
+          <div>
+            <div class="strip-label">Satellite Ingest</div>
+            <div class="strip-val">INSAT-3D / NOAA Feeds</div>
+          </div>
+        </div>
+        <div class="strip-item">
+          <span class="strip-dot ok"></span>
+          <div>
+            <div class="strip-label">Cyclone Best-Track</div>
+            <div class="strip-val">IBTrACS Global Catalog</div>
+          </div>
+        </div>
+        <div class="strip-item">
+          <span class="strip-dot ok"></span>
+          <div>
+            <div class="strip-label">GIS Demographics</div>
+            <div class="strip-val">WorldPop 100m + OSM</div>
+          </div>
+        </div>
+        <div class="strip-item">
+          <span class="strip-dot ok"></span>
+          <div>
+            <div class="strip-label">Forecasting Engine</div>
+            <div class="strip-val">Atmospheric Deep Ensemble</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Clean footer -->
+      <footer class="home-clean-footer">
+        <div class="footer-brand-wrap">
+          <img src="/img/vayu_drishti_symbol.png" alt="" class="footer-icon">
+          <span>VAYU-DRISHTI &bull; Atmospheric Observation &amp; Cyclone Intelligence System</span>
+        </div>
+        <span>Scientific Data: NOAA IBTrACS &bull; ISRO MOSDAC &bull; ECMWF ERA5 &bull; WorldPop</span>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAGE: CITIZEN VIEW (Public, Zero Login, Simplified Guidance)
+       ===================================================================== -->
+  <div id="page-citizen" class="page">
+    <div class="citizen-page-container">
+
+      <!-- Active Cyclone Alert Banner -->
+      <div class="citizen-banner-alert">
+        <div class="citizen-alert-left">
+          <span class="alert-pulse-badge" id="citizen-alert-badge">Live Advisory</span>
+          <div>
+            <div class="citizen-alert-headline" id="citizen-storm-headline">Cyclone Amphan &bull; Extremely Severe Cyclonic Storm</div>
+            <div class="citizen-alert-sub" id="citizen-storm-sub">Approaching North Bay of Bengal &bull; Coastal Odisha &amp; West Bengal on Red Alert</div>
+            <div class="citizen-storm-select-wrap">
+              <label for="citizen-storm-select" style="font-size: 11.5px; color: #92400E; font-weight: 500;">Select Storm:</label>
+              <select id="citizen-storm-select" class="citizen-storm-select" aria-label="Select Cyclone"></select>
+            </div>
+          </div>
+        </div>
+        <div class="citizen-alert-metrics">
+          <div class="citizen-metric-col">
+            <div class="citizen-metric-val" id="citizen-wind-speed">155 - 165 km/h</div>
+            <div class="citizen-metric-lbl">Est. Gust Wind Speed</div>
+          </div>
+          <div class="citizen-metric-col">
+            <div class="citizen-metric-val" id="citizen-landfall-eta">~18 Hours</div>
+            <div class="citizen-metric-lbl">Expected Landfall</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Two-Column Grid -->
+      <div class="citizen-grid">
+
+        <!-- Left Column: Map & Public Legend -->
+        <div class="citizen-panel">
+          <div class="citizen-panel-header">
+            <div class="citizen-panel-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+              <span>Modeled Public Risk &amp; Evacuation Area</span>
+            </div>
+            <span class="citizen-source-tag">Source: IMD &bull; NDMA GIS</span>
+          </div>
+
+          <div id="citizen-map-container">
+            <div id="citizen-leaflet-map" style="width: 100%; height: 100%;"></div>
+          </div>
+
+          <div class="citizen-map-legend">
+            <div class="legend-item"><span class="legend-swatch swatch-danger"></span> <strong>Red Zone:</strong> High Risk (Evacuation Mandatory)</div>
+            <div class="legend-item"><span class="legend-swatch swatch-warning"></span> <strong>Orange Zone:</strong> Heavy Rain &amp; Gale Warning</div>
+            <div class="legend-item"><span class="legend-swatch swatch-watch"></span> <strong>Blue Line:</strong> Forecast Storm Center Path</div>
+          </div>
+        </div>
+
+        <!-- Right Column: Local Area Risk Checker & Safety Guidelines -->
+        <div class="citizen-panel">
+          <div class="citizen-panel-header">
+            <div class="citizen-panel-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Check My District Risk &amp; Shelters</span>
+            </div>
+            <span class="citizen-source-tag">Local Safety Info</span>
+          </div>
+
+          <div class="district-search-bar">
+            <select id="citizen-district-select" class="district-select" aria-label="Select your coastal district">
+              <option value="South 24 Parganas">South 24 Parganas (West Bengal)</option>
+              <option value="Purba Medinipur">Purba Medinipur (West Bengal)</option>
+              <option value="Balasore" selected>Balasore (Odisha)</option>
+              <option value="Kendrapara">Kendrapara (Odisha)</option>
+              <option value="Bhadrak">Bhadrak (Odisha)</option>
+              <option value="Jagatsinghpur">Jagatsinghpur (Odisha)</option>
+              <option value="Puri">Puri (Odisha)</option>
+              <option value="Kolkata">Kolkata (West Bengal)</option>
+              <option value="Howrah">Howrah (West Bengal)</option>
+              <option value="Srikakulam">Srikakulam (Andhra Pradesh)</option>
+            </select>
+          </div>
+
+          <!-- District Report Card -->
+          <div class="district-report-box" id="citizen-district-report">
+            <div class="district-report-header">
+              <div class="district-report-name" id="citizen-d-name">Balasore District (Odisha)</div>
+              <span class="district-badge-tier tier-high" id="citizen-d-tier">HIGH RISK TIER</span>
+            </div>
+
+            <div class="district-details-grid">
+              <div class="district-detail-col">
+                <div class="detail-label">Wind Gusts</div>
+                <div class="detail-value" id="citizen-d-wind">130 - 150 km/h</div>
+              </div>
+              <div class="district-detail-col">
+                <div class="detail-label">Rainfall</div>
+                <div class="detail-value" id="citizen-d-rain">Heavy to Extreme</div>
+              </div>
+              <div class="district-detail-col">
+                <div class="detail-label">Storm Surge</div>
+                <div class="detail-value" id="citizen-d-surge">2.5 - 3.5 meters</div>
+              </div>
+            </div>
+
+            <div class="district-action-advice" id="citizen-d-advice">
+              <strong>Official Directive:</strong> Evacuation in progress for shoreline habitations within 5 km. Proceed to nearest Multi-Purpose Cyclone Shelter with essential medicines and identity documents.
+            </div>
+          </div>
+
+          <!-- Safety Guidance Accordion -->
+          <div class="safety-steps-accordion">
+            <div class="safety-step">
+              <div class="safety-step-header phase-before">
+                <span>Before Landfall (Preparation)</span>
+              </div>
+              <div class="safety-step-content">
+                <ul>
+                  <li>Charge mobile phones, power banks, and emergency flashlights.</li>
+                  <li>Store 3-4 days of clean drinking water in sealed jerry cans.</li>
+                  <li>Keep dry food, baby milk, and essential prescription medications ready.</li>
+                  <li>Fasten or move loose roofing sheets, zinc sheets, and potted plants indoors.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="safety-step">
+              <div class="safety-step-header phase-during">
+                <span>During Landfall (Active Storm)</span>
+              </div>
+              <div class="safety-step-content">
+                <ul>
+                  <li>Stay inside a pucca building or cyclone shelter away from glass windows.</li>
+                  <li><strong>CAUTION:</strong> Do NOT venture outside when the wind dies down suddenly; this is the storm eye and fierce reverse winds will resume quickly.</li>
+                  <li>Turn off main electrical breaker and LPG gas cylinder valves.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="safety-step">
+              <div class="safety-step-header phase-after">
+                <span>After Landfall (Post-Storm Safety)</span>
+              </div>
+              <div class="safety-step-content">
+                <ul>
+                  <li>Stay clear of sagging electrical poles, snapped cables, and fallen trees.</li>
+                  <li>Do not drive or wade across flooded tidal streams or culverts.</li>
+                  <li>Wait for official &lsquo;All Clear&rsquo; announcement from district authorities before returning home.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Emergency Helplines Strip -->
+      <div class="citizen-helplines-card">
+        <div class="helpline-left">
+          <h3>Emergency Disaster Helplines (24x7 Toll-Free)</h3>
+          <p>Official Government Emergency Dispatch Numbers for Immediate Assistance</p>
+        </div>
+        <div class="helpline-numbers">
+          <div class="helpline-badge">
+            <span class="helpline-name">NDMA National</span>
+            <span class="helpline-num">1078</span>
+          </div>
+          <div class="helpline-badge">
+            <span class="helpline-name">State SEOC</span>
+            <span class="helpline-num">1070</span>
+          </div>
+          <div class="helpline-badge">
+            <span class="helpline-name">District DDMA</span>
+            <span class="helpline-num">1077</span>
+          </div>
+          <div class="helpline-badge">
+            <span class="helpline-name">Ambulance</span>
+            <span class="helpline-num">108</span>
+          </div>
+          <div class="helpline-badge">
+            <span class="helpline-name">Police / Emergency</span>
+            <span class="helpline-num">112</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Citizen Footer / Authority Switch Banner -->
+      <div class="citizen-footer-banner">
+        <div>
+          <span>Official Public Safety Feed &bull; Sourced from India Meteorological Department (IMD) &amp; State Disaster Authorities</span>
+        </div>
+        <button class="btn-switch-authority" id="btn-citizen-to-authority">
+          <span>Disaster Management Official? Authority Login &rarr;</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAGE: AUTHORITY LOGIN (Dedicated Restricted Command Portal)
+       ===================================================================== -->
+  <div id="page-auth-login" class="page">
+    <div class="auth-page-container">
+
+      <!-- Authority Official Header -->
+      <div class="auth-header-card">
+        <div class="auth-header-left">
+          <img src="/img/vayu_drishti_symbol.png" alt="Emblem" class="auth-header-logo">
+          <div>
+            <h2 class="auth-header-title">VAYU-DRISHTI &bull; Authority Access Portal</h2>
+            <p class="auth-header-subtitle">Restricted Command Center for National &amp; State Disaster Management Authorities</p>
+          </div>
+        </div>
+        <div class="auth-official-seal">
+          <div>Govt. of India &bull; NDMA / SDMA</div>
+          <div>Official Incident Command</div>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="auth-content-grid">
+        <!-- Login Form Column -->
+        <div class="auth-main-card">
+          <div class="auth-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Authority Incident Commander Login</span>
+          </div>
+          <p class="auth-card-desc">
+            Enter your official disaster authority email and password. Access to Full Track Analytics, GIS Exposure, Landfall Shift Simulation, and Evacuation SITREP generation requires verified authority role credentials.
+          </p>
+
+          <!-- Error Alert Banner -->
+          <div class="auth-alert-box auth-alert-error" id="auth-login-error"></div>
+
+          <!-- Notice Banner -->
+          <div class="auth-alert-box auth-alert-info" id="auth-login-notice" style="display: none;"></div>
+
+          <form id="form-authority-login" action="javascript:void(0);" onsubmit="event.preventDefault(); window.app && window.app.authManager && window.app.authManager.handleLoginSubmit();">
+            <div class="auth-form-group">
+              <label class="auth-form-label" for="auth-input-email">Official Email / Govt ID</label>
+              <div class="auth-input-wrap">
+                <input type="email" id="auth-input-email" class="auth-input" placeholder="e.g. director.ndma@gov.in" required autocomplete="username">
+              </div>
+            </div>
+
+            <div class="auth-form-group">
+              <label class="auth-form-label" for="auth-input-password">Authority Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="auth-input-password" class="auth-input" placeholder="Enter secure authority password" required autocomplete="current-password">
+                <button type="button" class="btn-toggle-pwd" id="btn-toggle-pwd">Show</button>
+              </div>
+            </div>
+
+            <button type="button" class="btn-auth-submit" id="btn-submit-auth">
+              <span id="btn-submit-auth-text">Authenticate &amp; Open Command Center</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Side Column: Official Quick Selector & Citizen Callout -->
+        <div class="auth-side-card">
+          <div class="auth-accounts-box">
+            <div class="auth-accounts-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Authorized Authority Profiles</span>
+            </div>
+            <p class="auth-accounts-subtitle">
+              Select an official command designation below to auto-populate credentials for instant verification:
+            </p>
+
+            <div class="auth-account-chip" data-email="director.ndma@gov.in" data-pass="NDMA_National_2026!">
+              <div class="chip-designation">NDMA National Incident Commander</div>
+              <div class="chip-meta">Role: AUTHORITY_NDMA &bull; New Delhi</div>
+              <div class="chip-email">director.ndma@gov.in</div>
+            </div>
+
+            <div class="auth-account-chip" data-email="control.odisha@sdma.gov.in" data-pass="OSDMA_Odisha_2026!">
+              <div class="chip-designation">OSDMA Emergency Controller</div>
+              <div class="chip-meta">Role: AUTHORITY_SDMA &bull; Odisha</div>
+              <div class="chip-email">control.odisha@sdma.gov.in</div>
+            </div>
+
+            <div class="auth-account-chip" data-email="control.westbengal@sdma.gov.in" data-pass="WBSDMA_Bengal_2026!">
+              <div class="chip-designation">WBSDMA Coastal Action Cell</div>
+              <div class="chip-meta">Role: AUTHORITY_SDMA &bull; West Bengal</div>
+              <div class="chip-email">control.westbengal@sdma.gov.in</div>
+            </div>
+
+            <div class="auth-account-chip" data-email="collector.balasore@odisha.gov.in" data-pass="Collector_Balasore_2026!">
+              <div class="chip-designation">Balasore District Collector</div>
+              <div class="chip-meta">Role: DISTRICT_COLLECTOR &bull; Ground Ops</div>
+              <div class="chip-email">collector.balasore@odisha.gov.in</div>
+            </div>
+          </div>
+
+          <div class="auth-citizen-callout">
+            <h4>Coastal Resident or Citizen?</h4>
+            <p>No login is required to view live storm alerts, public risk zones, and safety guidance.</p>
+            <button class="btn-open-citizen-inline" id="btn-login-to-citizen">
+              <span>Open Public Citizen View &rarr;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAGE: MONITOR (Protected Authority Command Dashboard)
+       ===================================================================== -->
+       PAGE: MONITOR
+       ===================================================================== -->
+  <div id="page-monitor" class="page">
+
+    <!-- Map fills the full remaining height -->
+    <div class="monitor-layout">
+
+      <!-- Left Panel -->
+      <aside class="monitor-left-panel" id="monitor-left">
+
+        <!-- Cyclone selector -->
+        <div class="panel-section">
+          <div class="section-label">Cyclone</div>
+          <select id="storm-select" class="field-select">
+            <option value="">Loading...</option>
+          </select>
+        </div>
+
+        <!-- Time control -->
+        <div class="panel-section">
+          <div class="section-label">Observation time</div>
+          <div class="time-display" id="timeline-time-display">—</div>
+          <div class="playback-controls">
+            <button class="play-ctrl-btn" id="btn-step-back" title="Previous step">&#8592; Prev</button>
+            <button class="play-ctrl-btn play-btn" id="btn-play-pause" title="Play">&#9654; Play</button>
+            <button class="play-ctrl-btn" id="btn-step-fwd" title="Next step">Next &#8594;</button>
+          </div>
+          <input type="range" class="time-slider" id="timeline-slider" min="0" max="50" value="0" step="1">
+          <div class="time-slider-labels">
+            <span>Earlier</span>
+            <span id="timeline-step-badge">—</span>
+            <span>Later</span>
+          </div>
+        </div>
+
+        <!-- Map layers -->
+        <div class="panel-section">
+          <div class="section-label">Map layers</div>
+          <div class="layer-toggle-list">
+            <label class="layer-toggle">
+              <input type="checkbox" id="chk-layer-observed" checked>
+              <span class="layer-dot" style="background:#2563eb"></span>
+              Observed track
+            </label>
+            <label class="layer-toggle">
+              <input type="checkbox" id="chk-layer-predicted" checked>
+              <span class="layer-dot" style="background:#b45309"></span>
+              Predicted track
+            </label>
+            <label class="layer-toggle">
+              <input type="checkbox" id="chk-layer-corridor" checked>
+              <span class="layer-dot" style="background:#dc2626; opacity:.6"></span>
+              Risk area
+            </label>
+            <label class="layer-toggle">
+              <input type="checkbox" id="chk-layer-districts" checked>
+              <span class="layer-dot" style="background:#6b7280"></span>
+              District boundaries
+            </label>
+            <label class="layer-toggle">
+              <input type="checkbox" id="chk-layer-radii" checked>
+              <span class="layer-dot" style="background:#9333ea; opacity:.7"></span>
+              Wind radii
+            </label>
+            <label class="layer-toggle">
+              <input type="checkbox" id="chk-layer-eye" checked>
+              <span class="layer-dot" style="background:#10b981"></span>
+              Vortex eye &amp; eyewall
+            </label>
+            <label class="layer-toggle">
+              <input type="checkbox" id="chk-layer-infra" checked>
+              <span class="layer-dot" style="background:#0284c7"></span>
+              Infrastructure
+            </label>
+          </div>
+        </div>
+
+        <!-- Basemap -->
+        <div class="panel-section">
+          <div class="section-label">Map background</div>
+          <div class="basemap-options">
+            <button class="basemap-btn active" data-basemap="light-grey">Grey</button>
+            <button class="basemap-btn" data-basemap="nasa-truecolor">Satellite</button>
+            <button class="basemap-btn" data-basemap="nasa-ir">Infrared</button>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- Map -->
+      <div class="monitor-map-wrap">
+        <div id="leaflet-map"></div>
+        <div class="map-label">Cyclone track</div>
+        <div class="map-legend">
+          <div class="legend-row"><span class="legend-dot" style="background:#2563eb"></span> Observed</div>
+          <div class="legend-row"><span class="legend-dot" style="background:#b45309"></span> Predicted</div>
+          <div class="legend-row"><span class="legend-dot" style="background:#10b981"></span> Vortex Eye / Eyewall</div>
+          <div class="legend-row"><span class="legend-dot" style="background:#dc2626;opacity:.6"></span> Risk area</div>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <aside class="monitor-right-panel" id="monitor-right">
+
+        <div class="panel-section">
+          <div class="section-label">Current observation</div>
+
+          <div class="obs-data-block">
+            <div class="obs-row">
+              <span class="obs-key">Position</span>
+              <span class="obs-val" id="val-coords">—</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Movement</span>
+              <span class="obs-val" id="val-movement">—</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Wind</span>
+              <span class="obs-val" id="val-wind-kmh">—</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Pressure</span>
+              <span class="obs-val" id="val-pres-mb">—</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Category</span>
+              <span class="obs-val" id="hero-category-badge">—</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Intensity</span>
+              <span class="obs-val" id="val-intensity-trend">—</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Vortex Eye</span>
+              <span class="obs-val" id="val-eye-status" style="font-weight:600; color:#10b981;">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-label">Source</div>
+          <div class="source-block" id="source-block">
+            <div class="obs-row">
+              <span class="obs-key">Data</span>
+              <span class="obs-val">IBTrACS</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Mode</span>
+              <span class="obs-val" id="source-mode-label">Historical replay</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Time</span>
+              <span class="obs-val" id="source-time-label">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-label">Exposure</div>
+          <div class="obs-data-block">
+            <div class="obs-row">
+              <span class="obs-key">Districts</span>
+              <span class="obs-val" id="val-districts-count">—</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">Est. population</span>
+              <span class="obs-val" id="val-population">—</span>
+            </div>
+          </div>
+          <button class="text-link-btn" id="btn-quick-evacuation">View district table &rarr;</button>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-label">Prediction error (model)</div>
+          <div class="obs-data-block" id="pred-error-block">
+            <div class="obs-row">
+              <span class="obs-key">6 h</span>
+              <span class="obs-val">15.7 km</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">12 h</span>
+              <span class="obs-val">28.1 km</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">24 h</span>
+              <span class="obs-val">58.4 km</span>
+            </div>
+            <div class="obs-row">
+              <span class="obs-key">48 h</span>
+              <span class="obs-val">134.9 km</span>
+            </div>
+          </div>
+          <p class="note-text">Mean absolute error on test storms. See Data page for methodology.</p>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAGE: STUDY
+       ===================================================================== -->
+  <div id="page-study" class="page">
+    <div class="page-inner">
+      <div class="page-heading">
+        <h2>Study Cyclone</h2>
+        <p>Examine how the cyclone developed and changed over time.</p>
+      </div>
+
+      <!-- Study storm selector -->
+      <div class="study-controls">
+        <label class="field-label" for="study-storm-select">Cyclone</label>
+        <select id="study-storm-select" class="field-select" style="max-width:320px">
+          <option value="AMPHAN">Cyclone Amphan (2020)</option>
+          <option value="FANI">Cyclone Fani (2019)</option>
+          <option value="BIPARJOY">Cyclone Biparjoy (2023)</option>
+          <option value="TAUKTAE">Cyclone Tauktae (2021)</option>
+          <option value="YAAS">Cyclone Yaas (2021)</option>
+        </select>
+      </div>
+
+      <div class="study-tabs">
+        <button class="study-tab active" data-study-tab="timeline">Timeline</button>
+        <button class="study-tab" data-study-tab="environment">Environment</button>
+        <button class="study-tab" data-study-tab="track">Track</button>
+        <button class="study-tab" data-study-tab="comparison">Comparison</button>
+      </div>
+
+      <!-- Timeline tab -->
+      <div class="study-panel active" id="study-tab-timeline">
+        <p class="panel-desc">Development sequence from 48 hours before peak to landfall.</p>
+        <div class="timeline-flow" id="study-timeline-flow">
+
+          <div class="timeline-step">
+            <div class="timeline-step-label">48 h before</div>
+            <div class="timeline-step-card">
+              <div class="timeline-sat-placeholder">Satellite image<br><span class="note-text">Loading…</span></div>
+              <div class="timeline-step-meta">
+                <div class="obs-row"><span class="obs-key">Classification</span><span class="obs-val" id="tl-class-48">—</span></div>
+                <div class="obs-row"><span class="obs-key">Intensity trend</span><span class="obs-val" id="tl-trend-48">—</span></div>
+                <div class="obs-row"><span class="obs-key">Location</span><span class="obs-val" id="tl-loc-48">—</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-arrow">↓</div>
+
+          <div class="timeline-step">
+            <div class="timeline-step-label">24 h before</div>
+            <div class="timeline-step-card">
+              <div class="timeline-sat-placeholder">Satellite image<br><span class="note-text">Loading…</span></div>
+              <div class="timeline-step-meta">
+                <div class="obs-row"><span class="obs-key">Classification</span><span class="obs-val" id="tl-class-24">—</span></div>
+                <div class="obs-row"><span class="obs-key">Intensity trend</span><span class="obs-val" id="tl-trend-24">—</span></div>
+                <div class="obs-row"><span class="obs-key">Location</span><span class="obs-val" id="tl-loc-24">—</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-arrow">↓</div>
+
+          <div class="timeline-step">
+            <div class="timeline-step-label">12 h before</div>
+            <div class="timeline-step-card">
+              <div class="timeline-sat-placeholder">Satellite image<br><span class="note-text">Loading…</span></div>
+              <div class="timeline-step-meta">
+                <div class="obs-row"><span class="obs-key">Classification</span><span class="obs-val" id="tl-class-12">—</span></div>
+                <div class="obs-row"><span class="obs-key">Intensity trend</span><span class="obs-val" id="tl-trend-12">—</span></div>
+                <div class="obs-row"><span class="obs-key">Location</span><span class="obs-val" id="tl-loc-12">—</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-arrow">↓</div>
+
+          <div class="timeline-step highlight-step">
+            <div class="timeline-step-label">Peak / landfall</div>
+            <div class="timeline-step-card">
+              <div class="timeline-sat-placeholder">Satellite image<br><span class="note-text">Loading…</span></div>
+              <div class="timeline-step-meta">
+                <div class="obs-row"><span class="obs-key">Classification</span><span class="obs-val" id="tl-class-0">—</span></div>
+                <div class="obs-row"><span class="obs-key">Intensity trend</span><span class="obs-val" id="tl-trend-0">—</span></div>
+                <div class="obs-row"><span class="obs-key">Location</span><span class="obs-val" id="tl-loc-0">—</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Environment tab -->
+      <div class="study-panel" id="study-tab-environment">
+        <h3 class="panel-section-title">Environmental Conditions</h3>
+        <p class="panel-desc">Conditions around the cyclone during the selected period.</p>
+        <div class="env-charts-grid">
+          <div class="env-chart-box">
+            <div class="env-chart-title">Sea surface temperature</div>
+            <div class="chart-placeholder" id="chart-sst">Data not loaded</div>
+          </div>
+          <div class="env-chart-box">
+            <div class="env-chart-title">Wind speed at 850 hPa</div>
+            <div class="chart-placeholder" id="chart-wind">Data not loaded</div>
+          </div>
+          <div class="env-chart-box">
+            <div class="env-chart-title">Central pressure</div>
+            <div class="chart-placeholder" id="chart-pressure">Data not loaded</div>
+          </div>
+          <div class="env-chart-box">
+            <div class="env-chart-title">Relative humidity</div>
+            <div class="chart-placeholder" id="chart-humidity">Data not loaded</div>
+          </div>
+        </div>
+        <p class="note-text" style="margin-top:16px">Environmental variables sourced from ERA5 reanalysis. Compare conditions with changes in cyclone intensity using the timeline above.</p>
+      </div>
+
+      <!-- Track tab -->
+      <div class="study-panel" id="study-tab-track">
+        <h3 class="panel-section-title">Track Analysis</h3>
+        <p class="panel-desc">Observed track overlaid with model prediction. Deviation shown at each forecast horizon.</p>
+        <div class="two-col-layout">
+          <div class="chart-placeholder tall" id="chart-track-map">Track map loading…</div>
+          <div>
+            <div class="section-label" style="margin-bottom:8px">Prediction error</div>
+            <table class="data-table">
+              <thead>
+                <tr><th>Horizon</th><th>MAE (km)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>6 h</td><td id="track-err-6">15.7</td></tr>
+                <tr><td>12 h</td><td id="track-err-12">28.1</td></tr>
+                <tr><td>24 h</td><td id="track-err-24">58.4</td></tr>
+                <tr><td>48 h</td><td id="track-err-48">134.9</td></tr>
+              </tbody>
+            </table>
+            <p class="note-text" style="margin-top:12px">Values are mean absolute error over the test set. Only show numbers after validation.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison tab -->
+      <div class="study-panel" id="study-tab-comparison">
+        <h3 class="panel-section-title">Observed vs. Predicted</h3>
+        <p class="panel-desc">Model output compared with the actual observed track for this cyclone.</p>
+        <div class="chart-placeholder tall" id="chart-obs-vs-pred">Loading observed vs predicted track…</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAGE: COMPARE
+       ===================================================================== -->
+  <div id="page-compare" class="page">
+    <div class="page-inner">
+      <div class="page-heading">
+        <h2>Compare Cyclones</h2>
+        <p>Select two cyclones to compare their development, track, and intensity over time.</p>
+      </div>
+
+      <div class="compare-selectors">
+        <div>
+          <label class="field-label">Cyclone 1</label>
+          <select id="compare-storm-1" class="field-select">
+            <option value="AMPHAN">Cyclone Amphan (2020)</option>
+            <option value="FANI">Cyclone Fani (2019)</option>
+            <option value="BIPARJOY">Cyclone Biparjoy (2023)</option>
+            <option value="TAUKTAE">Cyclone Tauktae (2021)</option>
+            <option value="YAAS">Cyclone Yaas (2021)</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Cyclone 2</label>
+          <select id="compare-storm-2" class="field-select">
+            <option value="FANI">Cyclone Fani (2019)</option>
+            <option value="AMPHAN">Cyclone Amphan (2020)</option>
+            <option value="BIPARJOY">Cyclone Biparjoy (2023)</option>
+            <option value="TAUKTAE">Cyclone Tauktae (2021)</option>
+            <option value="YAAS">Cyclone Yaas (2021)</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="btn-run-compare">Compare</button>
+      </div>
+
+      <!-- Track side by side -->
+      <div class="section-label" style="margin-top:28px;margin-bottom:8px">Track</div>
+      <div class="two-col-layout">
+        <div class="chart-placeholder" id="compare-map-1" style="min-height:220px">Track 1</div>
+        <div class="chart-placeholder" id="compare-map-2" style="min-height:220px">Track 2</div>
+      </div>
+
+      <!-- Development table -->
+      <div class="section-label" style="margin-top:28px;margin-bottom:8px">Development</div>
+      <table class="data-table compare-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th id="cmp-head-1">Cyclone 1</th>
+            <th id="cmp-head-2">Cyclone 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Formation</td><td id="cmp-form-1">—</td><td id="cmp-form-2">—</td></tr>
+          <tr><td>Duration</td><td id="cmp-dur-1">—</td><td id="cmp-dur-2">—</td></tr>
+          <tr><td>Maximum intensity</td><td id="cmp-int-1">—</td><td id="cmp-int-2">—</td></tr>
+          <tr><td>Landfall</td><td id="cmp-land-1">—</td><td id="cmp-land-2">—</td></tr>
+          <tr><td>Track length</td><td id="cmp-len-1">—</td><td id="cmp-len-2">—</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Intensity over time -->
+      <div class="section-label" style="margin-top:28px;margin-bottom:8px">Intensity over time</div>
+      <div class="chart-placeholder" id="compare-intensity-chart" style="min-height:200px">Loading…</div>
+
+      <!-- Satellite images -->
+      <div class="section-label" style="margin-top:28px;margin-bottom:8px">Satellite observations (at peak)</div>
+      <div class="two-col-layout">
+        <div class="chart-placeholder" id="compare-sat-1" style="min-height:180px">Satellite image 1</div>
+        <div class="chart-placeholder" id="compare-sat-2" style="min-height:180px">Satellite image 2</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAGE: SIMULATION
+       ===================================================================== -->
+  <div id="page-simulation" class="page">
+    <div class="page-inner">
+      <div class="page-heading">
+        <h2>Scenario Analysis</h2>
+        <p>Explore how a change in the predicted track could affect geographic exposure.</p>
+      </div>
+
+      <div class="sim-layout">
+
+        <!-- Controls -->
+        <div class="sim-controls-col">
+
+          <div class="panel-section">
+            <div class="section-label">Cyclone</div>
+            <select id="sim-storm-select" class="field-select">
+              <option value="AMPHAN">Cyclone Amphan (2020)</option>
+              <option value="FANI">Cyclone Fani (2019)</option>
+              <option value="BIPARJOY">Cyclone Biparjoy (2023)</option>
+              <option value="TAUKTAE">Cyclone Tauktae (2021)</option>
+              <option value="YAAS">Cyclone Yaas (2021)</option>
+            </select>
+          </div>
+
+          <div class="panel-section">
+            <div class="section-label">Track shift</div>
+            <div class="slider-row">
+              <span class="slider-end-label">&larr; West</span>
+              <input type="range" id="input-shift-km" min="-150" max="150" value="0" step="10" class="field-range">
+              <span class="slider-end-label">East &rarr;</span>
+            </div>
+            <div class="slider-value-row">
+              <span class="obs-val" id="label-shift-km">0 km (no shift)</span>
+            </div>
+          </div>
+
+          <div class="panel-section">
+            <div class="section-label">Risk area width</div>
+            <div class="slider-row">
+              <span class="slider-end-label">Narrow</span>
+              <input type="range" id="input-corridor-mult" min="0.8" max="1.5" value="1.0" step="0.1" class="field-range">
+              <span class="slider-end-label">Wide</span>
+            </div>
+          </div>
+
+          <div class="panel-section">
+            <div class="section-label">Intensity scenario</div>
+            <select id="select-intensity-scenario" class="field-select">
+              <option value="CURRENT">No change</option>
+              <option value="RAPID_INTENSIFICATION">Stronger (+30 km/h)</option>
+              <option value="WEAKENING">Weaker (&minus;30 km/h)</option>
+              <option value="EXTREME_CAT5">Much stronger (+60 km/h)</option>
+            </select>
+          </div>
+
+          <div class="panel-section">
+            <button class="btn-primary" id="btn-run-scenario" style="width:100%">Run scenario</button>
+            <button class="btn-secondary" id="btn-sim-reset" style="width:100%;margin-top:8px">Reset</button>
+          </div>
+
+          <div class="panel-section">
+            <p class="note-text">Estimated exposure within the modeled zone. This is a scenario analysis, not an official warning.</p>
+          </div>
+
+        </div>
+
+        <!-- Results -->
+        <div class="sim-results-col">
+
+          <div class="sim-results-grid">
+
+            <div class="sim-result-panel">
+              <div class="sim-result-panel-title">Base case</div>
+              <div class="sim-metric-row">
+                <span class="sim-metric-label">Districts</span>
+                <span class="sim-metric-val" id="base-districts">—</span>
+              </div>
+              <div class="sim-metric-row">
+                <span class="sim-metric-label">Est. population</span>
+                <span class="sim-metric-val" id="base-population">—</span>
+              </div>
+              <div class="sim-metric-row">
+                <span class="sim-metric-label">Infrastructure at risk</span>
+                <span class="sim-metric-val" id="base-infra">—</span>
+              </div>
+            </div>
+
+            <div class="sim-result-panel scenario-panel">
+              <div class="sim-result-panel-title">Scenario</div>
+              <div class="sim-metric-row">
+                <span class="sim-metric-label">Districts</span>
+                <span class="sim-metric-val" id="delta-districts">—</span>
+              </div>
+              <div class="sim-metric-row">
+                <span class="sim-metric-label">Est. population</span>
+                <span class="sim-metric-val" id="delta-pop">—</span>
+              </div>
+              <div class="sim-metric-row">
+                <span class="sim-metric-label">Infrastructure at risk</span>
+                <span class="sim-metric-val" id="delta-ports">—</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="chart-placeholder" id="sim-map" style="min-height:280px;margin-top:16px">Scenario map will appear here</div>
+          <p class="sim-explanation-text" id="sim-explanation-text"></p>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAGE: DATA
+       ===================================================================== -->
+  <div id="page-data" class="page">
+    <div class="page-inner">
+      <div class="page-heading">
+        <h2>Data Sources</h2>
+        <p>All data used in this system. Sources, coverage periods, resolution, and retrieval status.</p>
+      </div>
+
+      <div class="data-sources-grid">
+
+        <div class="data-source-group">
+          <div class="data-source-group-title">Satellite observation</div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Source</th><th>Period</th><th>Resolution</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>HURSAT-B1 (NOAA)</td>
+                <td>1978–2015</td>
+                <td>8 km / 3 h</td>
+                <td><span class="status-badge status-ok">Available</span></td>
+              </tr>
+              <tr>
+                <td>HURSAT-AVHRR (NOAA)</td>
+                <td>1978–2015</td>
+                <td>4 km</td>
+                <td><span class="status-badge status-ok">Available</span></td>
+              </tr>
+              <tr>
+                <td>INSAT / MOSDAC (ISRO)</td>
+                <td>Near real-time</td>
+                <td>—</td>
+                <td><span class="status-badge status-warn">Not connected</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="data-source-group">
+          <div class="data-source-group-title">Cyclone records</div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Source</th><th>Period</th><th>Resolution</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>IBTrACS v04r01 (NOAA)</td>
+                <td>1842–present</td>
+                <td>6 h</td>
+                <td><span class="status-badge status-ok">Available</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="data-source-group">
+          <div class="data-source-group-title">Environmental data</div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Source</th><th>Period</th><th>Resolution</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ERA5 (Copernicus / ECMWF)</td>
+                <td>1940–present</td>
+                <td>0.25° / 1 h</td>
+                <td><span class="status-badge status-ok">Available</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="data-source-group">
+          <div class="data-source-group-title">Geographic data</div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Source</th><th>Period</th><th>Resolution</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>District boundaries (NWDP)</td>
+                <td>2011 census</td>
+                <td>District level</td>
+                <td><span class="status-badge status-ok">Available</span></td>
+              </tr>
+              <tr>
+                <td>OpenStreetMap / Geofabrik</td>
+                <td>Current</td>
+                <td>—</td>
+                <td><span class="status-badge status-ok">Available</span></td>
+              </tr>
+              <tr>
+                <td>WorldPop population grid</td>
+                <td>2020</td>
+                <td>100 m</td>
+                <td><span class="status-badge status-ok">Available</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Model methodology -->
+      <div class="page-heading" style="margin-top:40px">
+        <h3 style="font-size:18px">Model information</h3>
+        <p>Summary of the methods used in prediction and classification.</p>
+      </div>
+      <div class="data-method-grid">
+        <div class="method-card">
+          <div class="method-card-title">Track prediction</div>
+          <div class="obs-row"><span class="obs-key">Architecture</span><span class="obs-val">LSTM sequence model</span></div>
+          <div class="obs-row"><span class="obs-key">Inputs</span><span class="obs-val">Historical positions, satellite features, temporal features</span></div>
+          <div class="obs-row"><span class="obs-key">Horizons</span><span class="obs-val">+6 h, +12 h, +24 h, +48 h</span></div>
+          <div class="obs-row"><span class="obs-key">Training data</span><span class="obs-val">IBTrACS NIO storms 1990–2020</span></div>
+          <div class="obs-row"><span class="obs-key">Validation</span><span class="obs-val">Held-out storms, no leakage</span></div>
+        </div>
+        <div class="method-card">
+          <div class="method-card-title">Intensity classification</div>
+          <div class="obs-row"><span class="obs-key">Output</span><span class="obs-val">IMD category (Depression → Super Cyclone)</span></div>
+          <div class="obs-row"><span class="obs-key">Basis</span><span class="obs-val">Wind speed thresholds per IMD scale</span></div>
+          <div class="obs-row"><span class="obs-key">Note</span><span class="obs-val">Exact future wind speed not predicted. Trend only.</span></div>
+        </div>
+        <div class="method-card">
+          <div class="method-card-title">Exposure analysis</div>
+          <div class="obs-row"><span class="obs-key">Method</span><span class="obs-val">Spatial intersection of risk corridor with district polygons</span></div>
+          <div class="obs-row"><span class="obs-key">Population</span><span class="obs-val">WorldPop raster aggregated by district</span></div>
+          <div class="obs-row"><span class="obs-key">Wording</span><span class="obs-val">Modeled risk corridor — not validated damage assessment</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL: Executive Evacuation SITREP & PDF Generator (NDMA/SDMA Format)
+       ===================================================================== -->
+  <div class="modal-overlay" id="modal-districts">
+    <div class="modal-box sitrep-modal-box">
+      <!-- Modal Toolbar (Screen only) -->
+      <div class="modal-header sitrep-header-screen">
+        <div class="sitrep-badge-group">
+          <span class="sitrep-official-pill">GOVERNMENT OF INDIA &bull; NDMA / SDMA</span>
+          <span class="sitrep-status-pill">TACTICAL ACTION LEVEL-1</span>
+        </div>
+        <div class="sitrep-actions-top">
+          <button class="btn-primary" id="btn-print-evacuation" style="display:inline-flex; align-items:center; gap:6px; background:#047857;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <span>Print / Save as PDF</span>
+          </button>
+          <button class="btn-secondary" id="btn-export-evacuation">Export JSON</button>
+          <button class="modal-close-btn" id="btn-close-districts" aria-label="Close">&times;</button>
+        </div>
+      </div>
+
+      <!-- Printable SITREP Body -->
+      <div class="modal-body sitrep-printable-body" id="sitrep-printable-content">
+        <!-- Official Document Header (Visible in print & screen) -->
+        <div class="sitrep-doc-header">
+          <div class="sitrep-doc-emblem-wrap">
+            <img src="/img/vayu_drishti_symbol.png" alt="Emblem" class="sitrep-doc-emblem">
+            <div>
+              <h2 class="sitrep-doc-title">TACTICAL EVACUATION &amp; CONTINGENCY SITREP (SITREP-EX)</h2>
+              <div class="sitrep-doc-sub">National Cyclone Risk Mitigation Framework &bull; Integrated Decision Support Protocol</div>
+            </div>
+          </div>
+          <div class="sitrep-doc-meta">
+            <div><strong>Issue Time:</strong> <span id="sitrep-meta-time">—</span></div>
+            <div><strong>Target Storm:</strong> <span id="sitrep-meta-storm" style="font-weight:700; color:#047857;">—</span></div>
+            <div><strong>Classification:</strong> <span id="sitrep-meta-cat">—</span></div>
+            <div><strong>Bulletin Ref:</strong> <span id="sitrep-meta-ref">VD-SITREP-2026/04</span></div>
+          </div>
+        </div>
+
+        <!-- 4 Key Impact Metric Cards -->
+        <div class="sitrep-metrics-grid">
+          <div class="sitrep-stat-card danger-card">
+            <div class="sitrep-stat-num" id="sitrep-stat-evac-pop">—</div>
+            <div class="sitrep-stat-label">Estimated Coastal Exposure</div>
+            <div class="sitrep-stat-sub">Immediate Mandate Evacuation Zone</div>
+          </div>
+          <div class="sitrep-stat-card warning-card">
+            <div class="sitrep-stat-num" id="sitrep-stat-landfall-districts">—</div>
+            <div class="sitrep-stat-label">Critical Landfall Districts</div>
+            <div class="sitrep-stat-sub">Priority 1 High-Surge Corridor</div>
+          </div>
+          <div class="sitrep-stat-card buffer-card">
+            <div class="sitrep-stat-num" id="sitrep-stat-buffer-districts">—</div>
+            <div class="sitrep-stat-label">High Exposure / Inundation</div>
+            <div class="sitrep-stat-sub">Priority 2 Wind &amp; Heavy Rain Alert</div>
+          </div>
+          <div class="sitrep-stat-card infra-card">
+            <div class="sitrep-stat-num" id="sitrep-stat-ports-count">—</div>
+            <div class="sitrep-stat-label">Ports &amp; Maritime Hubs</div>
+            <div class="sitrep-stat-sub">Immediate Operations Suspension</div>
+          </div>
+        </div>
+
+        <!-- Operational Directives for Disaster Authorities -->
+        <div class="sitrep-directives-box">
+          <div class="directives-title">⚡ STATUTORY OPERATIONAL DIRECTIVES (NDMA / SDMA CONCURRENCE)</div>
+          <ul class="directives-list">
+            <li><strong>DIRECTIVE 1:</strong> Complete 100% mandatory coastal evacuation within 10 km of shoreline to multi-purpose cyclone shelters in Priority 1 districts at least 18 hours before eyewall landfall.</li>
+            <li><strong>DIRECTIVE 2:</strong> Issue Great Danger Signal (Signal 8/9/10) across major and minor ports; cease all vessel loading, pilotage, and anchor cranes in storm corridor.</li>
+            <li><strong>DIRECTIVE 3:</strong> Mobilize NDRF / SDRF search-and-rescue battalions with satellite communication radios (SAT-phones), chain saws, and emergency diesel generation backup at district headquarters.</li>
+          </ul>
+        </div>
+
+        <!-- District Prioritized Evacuation Table -->
+        <div class="sitrep-table-wrap">
+          <div class="sitrep-table-title">District-Wise Impact Matrix &amp; Recommended Evacuation Action</div>
+          <table class="data-table sitrep-table" id="district-table">
+            <thead>
+              <tr>
+                <th style="width:24%;">District &amp; State</th>
+                <th style="width:16%;">Priority Tier</th>
+                <th style="width:20%;">Est. Exposed Population</th>
+                <th style="width:22%;">Critical Infrastructure</th>
+                <th style="width:18%;">Evacuation Status</th>
+              </tr>
+            </thead>
+            <tbody id="district-table-body">
+              <tr><td colspan="5" style="text-align:center;color:#6b7280;padding:20px">Loading operational exposure data…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Official Signoff Footer (Printable) -->
+        <div class="sitrep-footer-signoff">
+          <div class="signoff-note">
+            <em>Generated via VAYU-DRISHTI Cyclone Intelligence &bull; Multi-source AI &amp; GIS Reanalysis Engine.</em><br>
+            Disclaimer: Figures represent spatial risk modeling based on current corridor envelope. Authorities must cross-reference official IMD bulletins.
+          </div>
+          <div class="signoff-auth">
+            <div class="signoff-line"></div>
+            <span>Duty Officer / Cyclone Operations Cell</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL: System User Guide (Upper right corner access)
+       ===================================================================== -->
+  <div class="modal-overlay" id="modal-guide">
+    <div class="modal-box guide-modal-box">
+      <div class="modal-header">
+        <div class="guide-header-title">
+          <img src="/img/vayu_drishti_symbol.png" alt="" class="guide-modal-icon">
+          <div>
+            <span class="guide-badge">Documentation</span>
+            <h2>VAYU-DRISHTI User Guide</h2>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btn-close-guide" aria-label="Close guide">&times;</button>
+      </div>
+      <div class="modal-body guide-modal-body">
+        <div class="guide-steps-grid">
+          <div class="guide-step-card" style="border-left: 3.5px solid #0284C7; background: #F0F9FF;">
+            <div class="guide-step-num" style="background: #0284C7; color: #FFFFFF;">1</div>
+            <div class="guide-step-text">
+              <h4 style="color: #0369A1; font-weight: 700;">🌊 Public Citizen Safety View (No Login Needed)</h4>
+              <p>Designed for coastal residents and the public. Directly view live storm severity, landfall countdowns, localized district danger levels, emergency do's and don'ts, and locate nearby verified cyclone shelters without creating an account.</p>
+              <button class="guide-quick-btn citizen" id="btn-guide-to-citizen">
+                <span>Launch Citizen View Now &rarr;</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="guide-step-card" style="border-left: 3.5px solid #1E293B; background: #F8FAFC;">
+            <div class="guide-step-num" style="background: #1E293B; color: #FFFFFF;">2</div>
+            <div class="guide-step-text">
+              <h4 style="color: #0F172A; font-weight: 700;">🚨 Authority Incident Command Login</h4>
+              <p>Restricted to official Disaster Management Authorities (NDMA, SDMA, District Administration). Authenticate to access restricted operations: Deep Multi-Horizon Track Forecasting, GIS Critical Infrastructure overlays, Landfall Shift Simulation, and Evacuation SITREP reports. <em>(Use pre-filled chips for instant testing)</em>.</p>
+              <button class="guide-quick-btn authority" id="btn-guide-to-authority">
+                <span>Go to Authority Login &rarr;</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="guide-step-num">3</div>
+            <div class="guide-step-text">
+              <h4>Live &amp; Historical Observation</h4>
+              <p>Use the toggle in the top-right header to switch between near-real-time satellite observation and verified historical storm replay (Amphan, Fani, Biparjoy, Tauktae, Yaas).</p>
+            </div>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="guide-step-num">4</div>
+            <div class="guide-step-text">
+              <h4>Monitor &amp; Track Playback</h4>
+              <p>Navigate to <strong>Monitor</strong> and choose a cyclone. Use the Previous / Play / Next controls or the timeline slider to track the cyclone eye, wind radii, and predicted corridor.</p>
+            </div>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="guide-step-num">5</div>
+            <div class="guide-step-text">
+              <h4>Scenario Simulation (What-If)</h4>
+              <p>On the <strong>Simulation</strong> page, shift the projected track left or right and adjust the risk corridor width. The system recalculates impacted districts and population in real time.</p>
+            </div>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="guide-step-num">6</div>
+            <div class="guide-step-text">
+              <h4>Study &amp; Side-by-Side Comparison</h4>
+              <p>Visit <strong>Study</strong> for multi-sensor atmospheric metrics (SST, shear, pressure). Use <strong>Compare</strong> to benchmark two storms across duration, peak wind, and landfall impact.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer guide-modal-footer">
+        <span class="guide-footer-note">Decision support system &bull; Data from NOAA IBTrACS, ISRO MOSDAC &amp; ERA5</span>
+        <button class="btn-primary" id="btn-guide-close">Close Guide</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet and App Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="/js/app.js?v=3"></script>
+
+  <!-- Page navigation and modal script -->
+  <script>
+    (function () {
+      const pages = document.querySelectorAll('.page');
+      const navBtns = document.querySelectorAll('.nav-btn[data-page]');
+      const authorityPages = ['monitor', 'study', 'compare', 'simulation', 'data'];
+
+      function showPage(pageId) {
+        // Enforce Role-Based Authority Protection
+        if (authorityPages.includes(pageId)) {
+          if (window.app && window.app.authManager && !window.app.authManager.isAuthority()) {
+            window.app.authManager.requireAuthority(pageId);
+            return;
+          }
+        }
+
+        pages.forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
+        navBtns.forEach(b => b.classList.toggle('active', b.dataset.page === pageId));
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Invalidate map on returning to monitor
+        if (pageId === 'monitor' && window.app && window.app.mapManager && window.app.mapManager.map) {
+          setTimeout(() => window.app.mapManager.map.invalidateSize(), 80);
+        }
+        // Invalidate citizen map when opening citizen view
+        if (pageId === 'citizen' && window.app && window.app.citizenController) {
+          window.app.citizenController.invalidateSize();
+        }
+        // Invalidate simulation map when opening simulation tab
+        if (pageId === 'simulation' && window.app && window.app.simulator) {
+          window.app.simulator.invalidateSize();
+        }
+        // Invalidate comparison maps when opening compare tab
+        if (pageId === 'compare' && window.app && window.app.compareController) {
+          window.app.compareController.invalidateSize();
+        }
+        // Invalidate study maps when opening study tab
+        if (pageId === 'study' && window.app && window.app.studyController) {
+          window.app.studyController.invalidateSize();
+        }
+      }
+      window.showPage = showPage;
+
+      // Real-time IST Digital Clock (Immediate startup)
+      function startClock() {
+        const el = document.getElementById('clock-ist');
+        if (!el) return;
+        const update = () => {
+          const now = new Date();
+          const t = now.toLocaleTimeString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          });
+          el.textContent = t + ' IST';
+        };
+        update();
+        setInterval(update, 1000);
+      }
+      startClock();
+
+      navBtns.forEach(btn => {
+        btn.addEventListener('click', () => showPage(btn.dataset.page));
+      });
+
+      // "Open Monitor" / Authority Dashboard button on home page
+      document.getElementById('btn-go-monitor')?.addEventListener('click', () => showPage('monitor'));
+
+      // Citizen View button on home page
+      document.getElementById('btn-home-citizen')?.addEventListener('click', () => showPage('citizen'));
+
+      // Authority Login button on home page
+      const handleAuthorityLoginClick = () => {
+        if (window.app && window.app.authManager && window.app.authManager.isAuthority()) {
+          showPage('monitor');
+        } else {
+          showPage('auth-login');
+        }
+      };
+      document.getElementById('btn-home-authority')?.addEventListener('click', handleAuthorityLoginClick);
+
+      // Direct submit button listener for authority login
+      document.getElementById('btn-submit-auth')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.app && window.app.authManager) {
+          window.app.authManager.handleLoginSubmit();
+        }
+      });
+
+      // Home module cards click to navigate
+      document.querySelectorAll('.home-card[data-nav-target]').forEach(card => {
+        card.addEventListener('click', () => {
+          const target = card.dataset.navTarget;
+          if (target) showPage(target);
+        });
+      });
+
+      // Guide modal controls (Header button in upper right & Home page secondary CTA)
+      const guideModal = document.getElementById('modal-guide');
+      const openGuide = () => guideModal?.classList.add('active');
+      const closeGuide = () => guideModal?.classList.remove('active');
+      window.openGuide = openGuide;
+      window.closeGuide = closeGuide;
+
+      document.getElementById('btn-open-guide')?.addEventListener('click', openGuide);
+      document.getElementById('btn-home-guide')?.addEventListener('click', openGuide);
+      document.getElementById('btn-close-guide')?.addEventListener('click', closeGuide);
+      document.getElementById('btn-guide-close')?.addEventListener('click', closeGuide);
+
+      // Quick action buttons inside Guide modal
+      document.getElementById('btn-guide-to-citizen')?.addEventListener('click', () => {
+        closeGuide();
+        showPage('citizen');
+      });
+      document.getElementById('btn-guide-to-authority')?.addEventListener('click', () => {
+        closeGuide();
+        showPage('auth-login');
+      });
+
+      guideModal?.addEventListener('click', function (e) {
+        if (e.target === this) closeGuide();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeGuide();
+          document.getElementById('modal-districts')?.classList.remove('active');
+        }
+      });
+
+      // Study tabs
+      document.querySelectorAll('.study-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.study-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.study-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          const panel = document.getElementById('study-tab-' + tab.dataset.studyTab);
+          if (panel) panel.classList.add('active');
+          if (window.app && window.app.studyController) {
+            window.app.studyController.invalidateSize();
+          }
+        });
+      });
+
+      // District modal close
+      document.getElementById('modal-districts')?.addEventListener('click', function (e) {
+        if (e.target === this) this.classList.remove('active');
+      });
+      document.getElementById('btn-close-districts')?.addEventListener('click', () => {
+        document.getElementById('modal-districts').classList.remove('active');
+      });
+      document.getElementById('btn-quick-evacuation')?.addEventListener('click', () => {
+        document.getElementById('modal-districts').classList.add('active');
+        if (window.app) window.app.populateDistrictTable();
+      });
+
+      // Slider labels
+      const shiftInput = document.getElementById('input-shift-km');
+      const shiftLabel = document.getElementById('label-shift-km');
+      if (shiftInput && shiftLabel) {
+        shiftInput.addEventListener('input', () => {
+          const v = parseInt(shiftInput.value);
+          if (v < 0) shiftLabel.textContent = Math.abs(v) + ' km west';
+          else if (v > 0) shiftLabel.textContent = v + ' km east';
+          else shiftLabel.textContent = '0 km (no shift)';
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>

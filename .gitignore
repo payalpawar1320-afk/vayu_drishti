@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Caches and virtual environments
+.pytest_cache/
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Data storage (as per architecture specification)
+data/raw/
+data/processed/cache/
+*.pkl
+*.geojson.gz
+*.nc
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

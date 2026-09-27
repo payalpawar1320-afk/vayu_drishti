@@ -1,0 +1,77 @@
+# Official Dataset Sources, Citations & Registry
+# Multi-Source Cyclone Evolution & Impact Intelligence System
+
+datasets:
+  hursat_b1:
+    name: "NOAA HURSAT-B1"
+    version: "v06"
+    purpose: "Historical tropical cyclone geostationary satellite imagery"
+    official_url: "https://www.ncei.noaa.gov/products/hurricane-satellite-data"
+    coverage: "Global tropical cyclones through 2015"
+    format: "NetCDF"
+    channels:
+      - "IR_11um"
+      - "Visible"
+    attribution: "NOAA National Centers for Environmental Information (NCEI)"
+    citation: "Knapp, K. R., et al. (2011). Globally gridded satellite observations for tropical cyclones (HURSAT). BAMS."
+
+  hursat_avhrr:
+    name: "NOAA HURSAT-AVHRR"
+    version: "v05"
+    purpose: "High-resolution (~4 km) gridded historical tropical cyclone AVHRR imagery"
+    official_url: "https://www.ncei.noaa.gov/products/hurricane-satellite-data"
+    metadata_url: "https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C00857"
+    coverage: "Global tropical cyclones"
+    format: "NetCDF"
+    channels:
+      - "Channel 4 (10.8 um IR)"
+      - "Channel 5 (12.0 um IR)"
+    attribution: "NOAA NCEI"
+
+  ibtracs:
+    name: "NOAA IBTrACS"
+    version: "v04r01"
+    purpose: "Global Best Track ground truth, positions, sustained wind, pressure"
+    official_url: "https://www.ncei.noaa.gov/products/international-best-track-archive"
+    basin_focus: "NI (North Indian Ocean: Arabian Sea & Bay of Bengal)"
+    agencies:
+      - "IMD (India Meteorological Department)"
+      - "JTWC (Joint Typhoon Warning Center)"
+      - "WMO"
+    format: "CSV / NetCDF"
+    attribution: "NOAA NCEI & World Meteorological Organization"
+
+  era5:
+    name: "Copernicus ERA5 Reanalysis"
+    version: "ERA5 Hourly Single Levels"
+    purpose: "Environmental variables (SST, vertical wind shear, MSLP, relative humidity)"
+    official_url: "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
+    attribution: "European Centre for Medium-Range Weather Forecasts (ECMWF) / Copernicus Climate Change Service"
+
+  insat_mosdac:
+    name: "ISRO MOSDAC INSAT-3D/3DR/3DS"
+    version: "Operational Cyclone Products"
+    purpose: "Indian region satellite observation and validation"
+    official_url: "https://www.mosdac.gov.in/cyclone"
+    attribution: "Space Applications Centre (SAC), Indian Space Research Organisation (ISRO)"
+
+  india_districts:
+    name: "National Water Informatics Centre / Geological Survey of India District Boundaries"
+    purpose: "Official administrative district polygons for spatial exposure intersection"
+    official_url: "https://www.nwdp.nwic.gov.in/dataset/district-boundary"
+    backup_source: "Survey of India Administrative Boundary Data Base (ABDB)"
+    format: "GeoJSON / Shapefile"
+
+  worldpop:
+    name: "WorldPop Global High Resolution Population Denominators"
+    purpose: "Estimated population exposure within modeled cyclone risk corridors"
+    official_url: "https://www.worldpop.org/datacatalog/"
+    format: "GeoTIFF / Zonal Statistics GeoJSON"
+    attribution: "WorldPop, University of Southampton"
+
+  osm_infrastructure:
+    name: "OpenStreetMap India (via Geofabrik)"
+    purpose: "Critical infrastructure assets (National/State Highways, Ports, Airports, Hospitals)"
+    official_url: "https://download.geofabrik.de/asia/india.html"
+    format: "GeoJSON / PBF"
+    attribution: "OpenStreetMap Contributors, licensed under ODbL"
