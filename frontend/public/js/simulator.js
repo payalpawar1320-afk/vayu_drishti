@@ -21,12 +21,13 @@ export class SimulatorController {
       track: L.layerGroup()
     };
 
-    this.initSimMap();
+    // Map initialized lazily when tab is opened to ensure container dimensions exist
   }
 
   initSimMap() {
+    if (this.simMap) return;
     const el = document.getElementById(this.containerId);
-    if (!el) return;
+    if (!el || typeof L === 'undefined') return;
 
     // Clear placeholder text
     el.innerHTML = '';
@@ -40,31 +41,31 @@ export class SimulatorController {
       attributionControl: false
     });
 
-    // Clean Esri Canvas Light Gray Basemap (Free, zero watermark)
+    // Vivid Carto Voyager Basemap
     L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 16 }
-    ).addTo(this.simMap);
-
-    // Coastlines & place labels overlay
-    L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 16, opacity: 0.85 }
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      { maxZoom: 18, subdomains: 'abcd' }
     ).addTo(this.simMap);
 
     // Add feature layer groups
     Object.values(this.layers).forEach(l => l.addTo(this.simMap));
+    this.runDefaultScenario();
   }
 
   invalidateSize() {
-    if (this.simMap) {
-      setTimeout(() => {
+    if (!this.simMap) {
+      this.initSimMap();
+    }
+    const update = () => {
+      if (this.simMap) {
         this.simMap.invalidateSize();
         if (this.lastBounds && this.lastBounds.isValid()) {
           this.simMap.fitBounds(this.lastBounds, { padding: [24, 24], maxZoom: 8 });
         }
-      }, 100);
-    }
+      }
+    };
+    setTimeout(update, 50);
+    setTimeout(update, 200);
   }
 
   setStorm(stormId) {

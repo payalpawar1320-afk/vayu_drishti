@@ -896,7 +896,7 @@
         <h3 class="panel-section-title">Track Analysis</h3>
         <p class="panel-desc">Observed track overlaid with model prediction. Deviation shown at each forecast horizon.</p>
         <div class="two-col-layout">
-          <div class="chart-placeholder tall" id="chart-track-map">Track map loading…</div>
+          <div id="chart-track-map"></div>
           <div>
             <div class="section-label" style="margin-bottom:8px">Prediction error</div>
             <table class="data-table">
@@ -919,7 +919,7 @@
       <div class="study-panel" id="study-tab-comparison">
         <h3 class="panel-section-title">Observed vs. Predicted</h3>
         <p class="panel-desc">Model output compared with the actual observed track for this cyclone.</p>
-        <div class="chart-placeholder tall" id="chart-obs-vs-pred">Loading observed vs predicted track…</div>
+        <div id="chart-obs-vs-pred"></div>
       </div>
 
     </div>
@@ -962,8 +962,8 @@
       <!-- Track side by side -->
       <div class="section-label" style="margin-top:28px;margin-bottom:8px">Track</div>
       <div class="two-col-layout">
-        <div class="chart-placeholder" id="compare-map-1" style="min-height:220px">Track 1</div>
-        <div class="chart-placeholder" id="compare-map-2" style="min-height:220px">Track 2</div>
+        <div id="compare-map-1"></div>
+        <div id="compare-map-2"></div>
       </div>
 
       <!-- Development table -->
@@ -1106,7 +1106,7 @@
 
           </div>
 
-          <div class="chart-placeholder" id="sim-map" style="min-height:280px;margin-top:16px">Scenario map will appear here</div>
+          <div id="sim-map"></div>
           <p class="sim-explanation-text" id="sim-explanation-text"></p>
 
         </div>
@@ -1485,27 +1485,19 @@
         }
         // Invalidate citizen map when opening citizen view
         if (pageId === 'citizen' && window.app && window.app.citizenController) {
-          requestAnimationFrame(() => {
-            setTimeout(() => window.app.citizenController.invalidateSize(), 100);
-          });
+          window.app.citizenController.invalidateSize();
         }
         // Invalidate simulation map when opening simulation tab
         if (pageId === 'simulation' && window.app && window.app.simulator) {
-          requestAnimationFrame(() => {
-            setTimeout(() => window.app.simulator.invalidateSize(), 100);
-          });
+          window.app.simulator.invalidateSize();
         }
         // Invalidate comparison maps when opening compare tab
         if (pageId === 'compare' && window.app && window.app.compareController) {
-          requestAnimationFrame(() => {
-            setTimeout(() => window.app.compareController.invalidateSize(), 120);
-          });
+          window.app.compareController.invalidateSize();
         }
         // Invalidate study maps when opening study tab
         if (pageId === 'study' && window.app && window.app.studyController) {
-          requestAnimationFrame(() => {
-            setTimeout(() => window.app.studyController.invalidateSize(), 120);
-          });
+          window.app.studyController.invalidateSize();
         }
       }
       window.showPage = showPage;

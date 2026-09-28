@@ -550,14 +550,32 @@ export class CitizenViewController {
   }
 
   invalidateSize() {
+    if (!this.map) {
+      this.initMap();
+    }
     if (!this.hasLoaded) {
       this.hasLoaded = true;
       this.loadInitialData();
     }
-    if (this.map) {
-      setTimeout(() => this.map.invalidateSize(), 80);
-    } else {
-      this.initMap();
-    }
+    const update = () => {
+      if (this.map) {
+        this.map.invalidateSize();
+        if (this.stormDetail && this.stormDetail.track_points) {
+          const pts = this.stormDetail.track_points;
+          const lats = pts.map(p => p.latitude);
+          const lons = pts.map(p => p.longitude);
+          if (lats.length > 0) {
+            try {
+              this.map.fitBounds([
+                [Math.min(...lats) - 1.5, Math.min(...lons) - 1.5],
+                [Math.max(...lats) + 1.5, Math.max(...lons) + 1.5]
+              ], { padding: [20, 20] });
+            } catch (e) {}
+          }
+        }
+      }
+    };
+    setTimeout(update, 60);
+    setTimeout(update, 220);
   }
 }

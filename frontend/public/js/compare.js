@@ -16,21 +16,21 @@ export class CompareController {
     this.storm2Data = null;
     this.hasLoaded = false;
 
-    this.initMaps();
+    // Maps initialized lazily when compare tab is opened
     this.setupListeners();
   }
 
   initMaps() {
     const el1 = document.getElementById('compare-map-1');
     const el2 = document.getElementById('compare-map-2');
-    if (!el1 || !el2) return;
+    if (!el1 || !el2 || typeof L === 'undefined') return;
 
     if (this.map1) {
-      this.map1.remove();
+      try { this.map1.remove(); } catch(e){}
       this.map1 = null;
     }
     if (this.map2) {
-      this.map2.remove();
+      try { this.map2.remove(); } catch(e){}
       this.map2 = null;
     }
 
@@ -95,11 +95,13 @@ export class CompareController {
       this.hasLoaded = true;
       this.runComparison('AMPHAN', 'FANI');
     }
-    setTimeout(() => {
+    const update = () => {
       if (this.map1) this.map1.invalidateSize();
       if (this.map2) this.map2.invalidateSize();
       this.refitBounds();
-    }, 150);
+    };
+    setTimeout(update, 60);
+    setTimeout(update, 220);
   }
 
   refitBounds() {

@@ -26,7 +26,7 @@ export class StudyController {
     this.predictionData = null;
     this.observationData = null;
 
-    this.initMaps();
+    // Maps initialized lazily when study tab is opened
     this.setupListeners();
   }
 
@@ -97,7 +97,7 @@ export class StudyController {
     if (!this.trackMap || !this.obsVsPredMap) {
       this.initMaps();
     }
-    setTimeout(() => {
+    const update = () => {
       if (this.trackMap) {
         this.trackMap.invalidateSize();
         if (this.trackBounds && this.trackMap.getContainer().clientWidth > 0) {
@@ -110,7 +110,9 @@ export class StudyController {
           try { this.obsVsPredMap.fitBounds(this.cmpBounds, { padding: [24, 24], maxZoom: 7 }); } catch(e){}
         }
       }
-    }, 150);
+    };
+    setTimeout(update, 60);
+    setTimeout(update, 220);
   }
 
   async loadStormStudy(stormId) {

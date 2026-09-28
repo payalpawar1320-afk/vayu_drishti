@@ -2869,12 +2869,59 @@ a {
 }
 
 #citizen-map-container {
-  height: 380px;
+  height: 400px;
   width: 100%;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   overflow: hidden;
   position: relative;
+  background: #e2e8f0;
+}
+
+#citizen-leaflet-map {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  position: relative !important;
+}
+
+#sim-map {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 380px !important;
+  min-height: 380px !important;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow: hidden !important;
+  background: #e2e8f0;
+  margin-top: 16px;
+}
+
+#compare-map-1,
+#compare-map-2 {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 340px !important;
+  min-height: 340px !important;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow: hidden !important;
+  background: #e2e8f0;
+}
+
+#chart-track-map,
+#chart-obs-vs-pred {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 360px !important;
+  min-height: 360px !important;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow: hidden !important;
+  background: #e2e8f0;
 }
 
 .citizen-map-legend {
