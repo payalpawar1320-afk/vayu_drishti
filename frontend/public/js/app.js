@@ -22,15 +22,21 @@ class CycloneApp {
     this.authManager = null;
     this.citizenController = null;
 
-    this.currentMode = 'live'; // 'live' | 'historic'
-    this.currentStormId = 'LIVE_OPERATIONAL_CYCLONE_NIO';
+    this.currentMode = 'historic'; // 'historic' (default Bay of Bengal benchmark) | 'live'
+    this.currentStormId = 'AMPHAN';
     this.stormDetail = null;
     this.timelineData = [];
     this.currentStepIndex = 0;
     this.currentGISData = null;
 
+    this.historicStormsList = [
+      { storm_id: 'AMPHAN',    storm_name: 'Cyclone Amphan (2020)' },
+      { storm_id: 'FANI',      storm_name: 'Cyclone Fani (2019)' },
+      { storm_id: 'BIPARJOY',  storm_name: 'Cyclone Biparjoy (2023)' },
+      { storm_id: 'TAUKTAE',   storm_name: 'Cyclone Tauktae (2021)' },
+      { storm_id: 'YAAS',      storm_name: 'Cyclone Yaas (2021)' }
+    ];
     this.liveStormsList = [];
-    this.historicStormsList = [];
 
     this.init();
   }
@@ -68,7 +74,9 @@ class CycloneApp {
     });
 
     this.setupEventListeners();
-    await this.loadInitialData();
+    this.populateStormDropdown();
+    this.selectStorm('AMPHAN');
+    this.loadInitialData();
   }
 
   initClock() {
@@ -192,46 +200,35 @@ class CycloneApp {
   }
 
   async loadInitialData() {
-    try {
-      // Live storms
-      try {
-        this.liveStormsList = await API.getLiveStorms();
-      } catch (e) {
-        console.warn('Live storms unavailable:', e);
-        this.liveStormsList = [];
+    // 1. Live storms in background
+    API.getLiveStorms().then(live => {
+      this.liveStormsList = live || [];
+      if (this.currentMode === 'live') {
+        this.populateStormDropdown(false);
       }
+    }).catch(e => console.warn('Live storms unavailable:', e));
 
-      // Historical catalog
-      const storms2020 = await API.getStorms(2020);
-      this.historicStormsList = [
-        { storm_id: 'AMPHAN',    storm_name: 'Cyclone Amphan (2020)' },
-        { storm_id: 'FANI',      storm_name: 'Cyclone Fani (2019)' },
-        { storm_id: 'BIPARJOY',  storm_name: 'Cyclone Biparjoy (2023)' },
-        { storm_id: 'TAUKTAE',   storm_name: 'Cyclone Tauktae (2021)' },
-        { storm_id: 'YAAS',      storm_name: 'Cyclone Yaas (2021)' },
-        ...storms2020.filter(s => !['AMPHAN','FANI','BIPARJOY','TAUKTAE','YAAS'].includes(s.storm_name))
-      ];
+    // 2. Extra historical catalog in background
+    API.getStorms(2020).then(storms2020 => {
+      const extra = (storms2020 || []).filter(s => !['AMPHAN','FANI','BIPARJOY','TAUKTAE','YAAS'].includes(s.storm_name));
+      if (extra.length > 0) {
+        this.historicStormsList.push(...extra);
+        if (this.currentMode === 'historic') {
+          this.populateStormDropdown(false);
+        }
+      }
+    }).catch(e => console.warn('Catalog query background:', e));
 
-      // Infrastructure (non-blocking background load)
-      API.getInfrastructureGeoJSON()
-        .then(infra => this.mapManager.renderInfrastructure(infra))
-        .catch(e => console.warn('Infrastructure data unavailable:', e));
-
-      // Default to live operational mode (Live Model evaluation)
-      this.currentMode = 'live';
-      document.getElementById('btn-mode-live')?.classList.add('active');
-      document.getElementById('btn-mode-historic')?.classList.remove('active');
-      const modeLbl = document.getElementById('source-mode-label');
-      if (modeLbl) modeLbl.textContent = 'Live data';
-      this.populateStormDropdown();
-    } catch (err) {
-      console.error('Init error:', err);
-    }
+    // 3. Infrastructure in background
+    API.getInfrastructureGeoJSON()
+      .then(infra => this.mapManager.renderInfrastructure(infra))
+      .catch(e => console.warn('Infrastructure data unavailable:', e));
   }
 
-  populateStormDropdown() {
+  populateStormDropdown(autoSelectFirst = true) {
     const sel = document.getElementById('storm-select');
     if (!sel) return;
+    const currentVal = sel.value;
     sel.innerHTML = '';
 
     const list = this.currentMode === 'live' ? this.liveStormsList : this.historicStormsList;
@@ -251,7 +248,9 @@ class CycloneApp {
       sel.appendChild(o);
     });
 
-    if (list.length > 0) {
+    if (currentVal && Array.from(sel.options).some(o => o.value === currentVal)) {
+      sel.value = currentVal;
+    } else if (autoSelectFirst && list.length > 0) {
       this.selectStorm(list[0].storm_id);
     }
   }

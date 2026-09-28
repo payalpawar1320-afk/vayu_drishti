@@ -590,7 +590,11 @@
         <div class="panel-section">
           <div class="section-label">Cyclone</div>
           <select id="storm-select" class="field-select">
-            <option value="">Loading...</option>
+            <option value="AMPHAN" selected>Cyclone Amphan (2020)</option>
+            <option value="FANI">Cyclone Fani (2019)</option>
+            <option value="BIPARJOY">Cyclone Biparjoy (2023)</option>
+            <option value="TAUKTAE">Cyclone Tauktae (2021)</option>
+            <option value="YAAS">Cyclone Yaas (2021)</option>
           </select>
         </div>
 
@@ -1463,25 +1467,14 @@
         pages.forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
         navBtns.forEach(b => b.classList.toggle('active', b.dataset.page === pageId));
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo(0, 0);
 
-        // Invalidate map on returning to monitor (double timing ensures DOM reflow is 100% complete)
+        // Invalidate map on returning to monitor cleanly without vibrating viewport
         if (pageId === 'monitor' && window.app && window.app.mapManager) {
-          requestAnimationFrame(() => {
+          window.app.mapManager.invalidateSize();
+          setTimeout(() => {
             window.app.mapManager.invalidateSize();
-            setTimeout(() => {
-              window.app.mapManager.invalidateSize();
-              if (window.app.stormDetail && window.app.stormDetail.track_points) {
-                const pts = window.app.stormDetail.track_points;
-                const lats = pts.map(p => p.latitude);
-                const lons = pts.map(p => p.longitude);
-                window.app.mapManager.fitBounds([
-                  [Math.min(...lats) - 1.5, Math.min(...lons) - 1.5],
-                  [Math.max(...lats) + 1.5, Math.max(...lons) + 1.5]
-                ]);
-              }
-            }, 120);
-          });
+          }, 80);
         }
         // Invalidate citizen map when opening citizen view
         if (pageId === 'citizen' && window.app && window.app.citizenController) {
