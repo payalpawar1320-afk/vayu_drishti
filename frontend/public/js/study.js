@@ -43,6 +43,23 @@ export class StudyController {
       attributionControl: false
     };
 
+    const createStudyTileLayer = () => {
+      const l = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors &bull; Esri'
+      });
+      l.on('tileerror', function(error) {
+        if (error && error.tile && !error.tile._hasFallback) {
+          error.tile._hasFallback = true;
+          const c = error.coords;
+          if (c) {
+            error.tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${c.z}/${c.y}/${c.x}`;
+          }
+        }
+      });
+      return l;
+    };
+
     if (elTrack) {
       elTrack.innerHTML = '';
       if (this.trackMap) {
@@ -50,11 +67,7 @@ export class StudyController {
         this.trackMap = null;
       }
       this.trackMap = L.map('chart-track-map', mapOptions);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(this.trackMap);
-
+      createStudyTileLayer().addTo(this.trackMap);
       Object.values(this.trackLayers).forEach(l => l.addTo(this.trackMap));
     }
 
@@ -65,11 +78,7 @@ export class StudyController {
         this.obsVsPredMap = null;
       }
       this.obsVsPredMap = L.map('chart-obs-vs-pred', mapOptions);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(this.obsVsPredMap);
-
+      createStudyTileLayer().addTo(this.obsVsPredMap);
       Object.values(this.comparisonLayers).forEach(l => l.addTo(this.obsVsPredMap));
     }
   }

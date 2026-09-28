@@ -4,7 +4,7 @@
  */
 
 import { API, AuthState } from './api.js';
-import { CycloneMapManager } from './map.js?v=2';
+import { CycloneMapManager } from './map.js?v=3';
 import { TimelinePlayer } from './timeline.js';
 import { SimulatorController } from './simulator.js';
 import { CompareController } from './compare.js';

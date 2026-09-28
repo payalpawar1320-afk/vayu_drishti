@@ -454,10 +454,20 @@ export class CitizenViewController {
       attributionControl: false
     });
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const baseLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(this.map);
+      attribution: '&copy; OpenStreetMap contributors &bull; Esri'
+    });
+    baseLayer.on('tileerror', function(error) {
+      if (error && error.tile && !error.tile._hasFallback) {
+        error.tile._hasFallback = true;
+        const c = error.coords;
+        if (c) {
+          error.tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${c.z}/${c.y}/${c.x}`;
+        }
+      }
+    });
+    baseLayer.addTo(this.map);
 
     if (this.stormDetail) {
       this.updateMapVisualization(this.stormDetail, this.gisExposure);

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="/css/styles.css?v=23">
+  <link rel="stylesheet" href="/css/styles.css?v=24">
 </head>
 <body>
 
@@ -502,18 +502,25 @@
           <!-- Notice Banner -->
           <div class="auth-alert-box auth-alert-info" id="auth-login-notice" style="display: none;"></div>
 
+          <!-- Instant 1-Click Demo Login Banner -->
+          <div style="margin-bottom: 18px;">
+            <button type="button" class="btn-primary" id="btn-quick-demo-login" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; font-weight: 600; font-size: 13px; background: #2E7D5B; border-color: #2E7D5B; color: #FFFFFF; border-radius: 6px; box-shadow: 0 2px 6px rgba(46, 125, 91, 0.3);">
+              <span>⚡ Instant Demo Access (Enter as NDMA Commander)</span>
+            </button>
+          </div>
+
           <form id="form-authority-login" action="javascript:void(0);" onsubmit="event.preventDefault(); window.app && window.app.authManager && window.app.authManager.handleLoginSubmit();">
             <div class="auth-form-group">
               <label class="auth-form-label" for="auth-input-email">Official Email / Govt ID</label>
               <div class="auth-input-wrap">
-                <input type="email" id="auth-input-email" class="auth-input" placeholder="e.g. director.ndma@gov.in" required autocomplete="username">
+                <input type="email" id="auth-input-email" class="auth-input" value="director.ndma@gov.in" placeholder="e.g. director.ndma@gov.in" required autocomplete="username">
               </div>
             </div>
 
             <div class="auth-form-group">
               <label class="auth-form-label" for="auth-input-password">Authority Password</label>
               <div class="auth-input-wrap">
-                <input type="password" id="auth-input-password" class="auth-input" placeholder="Enter secure authority password" required autocomplete="current-password">
+                <input type="password" id="auth-input-password" class="auth-input" value="NDMA_National_2026!" placeholder="Enter secure authority password" required autocomplete="current-password">
                 <button type="button" class="btn-toggle-pwd" id="btn-toggle-pwd">Show</button>
               </div>
             </div>
@@ -575,8 +582,6 @@
 
   <!-- =====================================================================
        PAGE: MONITOR (Protected Authority Command Dashboard)
-       ===================================================================== -->
-       PAGE: MONITOR
        ===================================================================== -->
   <div id="page-monitor" class="page">
 
@@ -1446,7 +1451,7 @@
 
   <!-- Leaflet and App Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="/js/app.js?v=3"></script>
+  <script type="module" src="/js/app.js?v=4"></script>
 
   <!-- Page navigation and modal script -->
   <script>

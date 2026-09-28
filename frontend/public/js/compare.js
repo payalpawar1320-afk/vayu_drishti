@@ -46,20 +46,31 @@ export class CompareController {
       attributionControl: false
     };
 
+    const createCompareTileLayer = () => {
+      const l = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors &bull; Esri'
+      });
+      l.on('tileerror', function(error) {
+        if (error && error.tile && !error.tile._hasFallback) {
+          error.tile._hasFallback = true;
+          const c = error.coords;
+          if (c) {
+            error.tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${c.z}/${c.y}/${c.x}`;
+          }
+        }
+      });
+      return l;
+    };
+
     // Initialize Map 1
     this.map1 = L.map('compare-map-1', mapOptions);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(this.map1);
+    createCompareTileLayer().addTo(this.map1);
     this.layer1 = L.layerGroup().addTo(this.map1);
 
     // Initialize Map 2
     this.map2 = L.map('compare-map-2', mapOptions);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(this.map2);
+    createCompareTileLayer().addTo(this.map2);
     this.layer2 = L.layerGroup().addTo(this.map2);
   }
 

@@ -47,6 +47,26 @@ export class CycloneMapManager {
 
     this.satelliteTileLayers = {};
 
+    // Helper to create resilient tile layers that automatically fallback to Esri CDN if primary fails
+    const makeRobustTileLayer = (primaryUrl, fallbackUrl, options) => {
+      const layer = L.tileLayer(primaryUrl, options);
+      if (fallbackUrl) {
+        layer.on('tileerror', function(error) {
+          if (error && error.tile && !error.tile._hasFallback) {
+            error.tile._hasFallback = true;
+            const c = error.coords;
+            if (c) {
+              error.tile.src = fallbackUrl
+                .replace('{z}', c.z)
+                .replace('{y}', c.y)
+                .replace('{x}', c.x);
+            }
+          }
+        });
+      }
+      return layer;
+    };
+
     // 1. Esri High-Resolution World Imagery (Full planetary textures, deep blue oceans, zero blank gaps)
     const makeSatelliteCanvas = () => L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -57,17 +77,25 @@ export class CycloneMapManager {
     );
     this.basemaps['esri-sat'] = makeSatelliteCanvas();
 
-    // 2. OpenStreetMap Standard (Fast, vivid, 100% free, zero watermark)
-    this.basemaps['voyager'] = L.tileLayer(
+    // 2. OpenStreetMap Standard (Fast, vivid, 100% free, zero watermark with Esri Topo fallback)
+    this.basemaps['voyager'] = makeRobustTileLayer(
       'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors &bull; Esri'
       }
     );
 
-    // 3. Clean Light Grey Basemap
-    this.basemaps['light-grey'] = this.basemaps['voyager'];
+    // 3. Clean Light Grey Basemap (Esri Light Gray Canvas with OpenStreetMap fallback)
+    this.basemaps['light-grey'] = makeRobustTileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        maxZoom: 16,
+        attribution: 'Tiles &copy; Esri, DeLorme, NAVTEQ &bull; OpenStreetMap'
+      }
+    );
 
     // 4. NASA GIBS MODIS True-Color Real Satellite Layer (backed by Esri Imagery so never blackout)
     this.satelliteTileLayers['nasa-truecolor'] = L.tileLayer(
@@ -122,7 +150,7 @@ export class CycloneMapManager {
       }
     );
 
-    // Default to clean, beautiful Carto Voyager / Light Grey basemap
+    // Default to clean, beautiful Light Grey basemap
     this.activeBasemapMode = 'light-grey';
     this.basemaps[this.activeBasemapMode].addTo(this.map);
 
@@ -135,7 +163,19 @@ export class CycloneMapManager {
 
   invalidateSize() {
     if (this.map) {
-      this.map.invalidateSize();
+      try {
+        this.map.invalidateSize();
+        const sz = this.map.getSize();
+        if (sz && sz.x > 0 && sz.y > 0) {
+          if (this.lastBounds) {
+            this.map.fitBounds(this.lastBounds, { padding: [40, 40], maxZoom: 8, animate: false });
+          } else {
+            this.map.setView([17.5, 85.0], 5);
+          }
+        }
+      } catch (e) {
+        console.warn('Map invalidateSize skipped:', e);
+      }
     }
   }
 
@@ -656,8 +696,17 @@ export class CycloneMapManager {
   }
 
   fitBounds(bounds) {
-    if (this.map && bounds) {
-      this.map.fitBounds(bounds, { padding: [60, 60], maxZoom: 8, animate: true });
+    if (!bounds) return;
+    this.lastBounds = bounds;
+    if (this.map) {
+      try {
+        const sz = this.map.getSize();
+        if (sz && sz.x > 0 && sz.y > 0) {
+          this.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8, animate: false });
+        }
+      } catch (e) {
+        console.warn('fitBounds postponed until container is visible:', e);
+      }
     }
   }
 
