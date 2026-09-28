@@ -47,12 +47,8 @@ export class CitizenViewController {
       "Kachchh": { state: "Gujarat", lat: 23.24, lon: 69.66 }
     };
 
-    this.init();
-  }
-
-  async init() {
+    this.hasLoaded = false;
     this.setupListeners();
-    await this.loadInitialData();
   }
 
   setupListeners() {
@@ -88,7 +84,14 @@ export class CitizenViewController {
 
   async loadInitialData() {
     try {
-      // 1. Fetch historical and live storms list
+      // 1. Fetch live storms and historical storms list
+      let liveList = [];
+      try {
+        liveList = await API.getLiveStorms();
+      } catch (e) {
+        liveList = [];
+      }
+
       const storms = await API.getStorms(2020);
       const priority = [
         { storm_id: 'AMPHAN', storm_name: 'Cyclone Amphan (2020)' },
@@ -99,9 +102,14 @@ export class CitizenViewController {
       ];
 
       this.stormsList = [
+        ...liveList,
         ...priority,
-        ...storms.filter(s => !priority.some(p => p.storm_id === s.storm_id))
+        ...storms.filter(s => !priority.some(p => p.storm_id === s.storm_id) && !liveList.some(l => l.storm_id === s.storm_id))
       ];
+
+      if (this.stormsList.length > 0) {
+        this.currentStormId = this.stormsList[0].storm_id;
+      }
 
       // Populate storm select
       const stormSelect = document.getElementById('citizen-storm-select');
@@ -304,13 +312,129 @@ export class CitizenViewController {
         fillOpacity: 0.85
       }).addTo(this.map);
 
+      const popDisplay = (intersectedMatch.estimated_population || intersectedMatch.estimated_population_exposed || 0).toLocaleString();
       this.mapLayers.districtMarker.bindPopup(`
         <div style="font-family: sans-serif; font-size: 12px;">
           <strong>${cleanName} (${coords.state})</strong><br>
           Status: ${intersectedMatch ? 'Inside Risk Corridor' : 'Outer Advisory Area'}<br>
-          ${intersectedMatch ? `Population Exposed: ${intersectedMatch.estimated_population_exposed.toLocaleString()}` : ''}
+          ${intersectedMatch ? `Population Exposed: ${popDisplay}` : ''}
         </div>
       `).openPopup();
+    }
+
+    // Render Dynamic District Hazard & Wind Gust Timeline Graph
+    this.renderDistrictHazardGraph(cleanName, intersectedMatch, coords);
+  }
+
+  renderDistrictHazardGraph(districtName, intersectedMatch, coords) {
+    const chartEl = document.getElementById('citizen-wind-chart');
+    if (!chartEl) return;
+
+    const peakWindKt = this.stormDetail?.peak_wind_kt || 85;
+    const baseKmh = Math.round(peakWindKt * 1.852);
+    
+    // Scale local peak depending on whether district is intersected in core or outer ring
+    const factor = intersectedMatch ? Math.min(1.0, 0.75 + (intersectedMatch.area_overlap_pct || 15) / 100 * 0.25) : 0.45;
+    const districtPeakKmh = Math.round(baseKmh * factor);
+
+    const timeSteps = [
+      { label: 'T-12h', gust: Math.round(districtPeakKmh * 0.42) },
+      { label: 'T-6h',  gust: Math.round(districtPeakKmh * 0.78) },
+      { label: 'Landfall', gust: districtPeakKmh },
+      { label: 'T+6h',  gust: Math.round(districtPeakKmh * 0.65) },
+      { label: 'T+12h', gust: Math.round(districtPeakKmh * 0.35) }
+    ];
+
+    const maxScale = Math.max(160, Math.ceil(districtPeakKmh * 1.15 / 20) * 20);
+    const w = 460;
+    const h = 90;
+    const padL = 36;
+    const padR = 28;
+    const padT = 16;
+    const padB = 22;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const pts = timeSteps.map((s, idx) => {
+      const x = padL + (idx / (timeSteps.length - 1)) * plotW;
+      const y = padT + plotH - (s.gust / maxScale) * plotH;
+      return { x, y, ...s };
+    });
+
+    const polyPoints = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const areaPoints = `${pts[0].x},${padT + plotH} ` + polyPoints + ` ${pts[pts.length - 1].x},${padT + plotH}`;
+
+    // Danger / Warning threshold lines
+    const yDestructive = padT + plotH - (120 / maxScale) * plotH;
+    const yGale = padT + plotH - (65 / maxScale) * plotH;
+
+    const strokeColor = districtPeakKmh >= 120 ? '#DC2626' : districtPeakKmh >= 65 ? '#D97706' : '#2563EB';
+
+    const svg = `
+      <svg viewBox="0 0 ${w} ${h}" style="width: 100%; height: 100%; display: block; overflow: visible;">
+        <defs>
+          <linearGradient id="citizenWindGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.28"/>
+            <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.02"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Danger line (120 km/h) -->
+        ${yDestructive >= padT ? `
+          <line x1="${padL}" y1="${yDestructive}" x2="${w - padR}" y2="${yDestructive}" stroke="#FCA5A5" stroke-dasharray="2,2" stroke-width="0.9"/>
+          <text x="${w - padR + 3}" y="${yDestructive + 3}" fill="#DC2626" font-size="8" font-weight="600">120k</text>
+        ` : ''}
+
+        <!-- Gale line (65 km/h) -->
+        ${yGale >= padT ? `
+          <line x1="${padL}" y1="${yGale}" x2="${w - padR}" y2="${yGale}" stroke="#FDE68A" stroke-dasharray="2,2" stroke-width="0.9"/>
+          <text x="${w - padR + 3}" y="${yGale + 3}" fill="#D97706" font-size="8" font-weight="600">65k</text>
+        ` : ''}
+
+        <!-- Shaded Area -->
+        <polygon points="${areaPoints}" fill="url(#citizenWindGrad)"/>
+
+        <!-- Curve Line -->
+        <polyline points="${polyPoints}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Points & Labels -->
+        ${pts.map((p, idx) => `
+          <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${idx === 2 ? 4.5 : 3.5}" fill="${idx === 2 ? '#FFFFFF' : strokeColor}" stroke="${strokeColor}" stroke-width="${idx === 2 ? 2.5 : 1.5}"/>
+          <text x="${p.x.toFixed(1)}" y="${(p.y - 6).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="bold" fill="${idx === 2 ? '#B91C1C' : '#334155'}">${p.gust}k</text>
+          <text x="${p.x.toFixed(1)}" y="${(padT + plotH + 13).toFixed(1)}" text-anchor="middle" font-size="8" fill="#64748B" font-weight="${idx === 2 ? 'bold' : 'normal'}">${p.label}</text>
+        `).join('')}
+      </svg>
+    `;
+
+    chartEl.innerHTML = svg;
+
+    // Update Peak Badge
+    const peakBadge = document.getElementById('citizen-graph-peak-badge');
+    if (peakBadge) {
+      peakBadge.textContent = `Peak Gust: ~${districtPeakKmh} km/h`;
+      peakBadge.style.background = districtPeakKmh >= 120 ? '#FEE2E2' : districtPeakKmh >= 65 ? '#FEF3C7' : '#EFF6FF';
+      peakBadge.style.color = districtPeakKmh >= 120 ? '#991B1B' : districtPeakKmh >= 65 ? '#92400E' : '#1E40AF';
+    }
+
+    // Update Severity Gauge Bar
+    const windSeverityPct = Math.min(100, Math.round((districtPeakKmh / 180) * 100));
+    const windValEl = document.getElementById('citizen-gauge-wind-val');
+    const windBarEl = document.getElementById('citizen-gauge-wind-bar');
+    if (windValEl && windBarEl) {
+      const severityWord = districtPeakKmh >= 140 ? 'Extreme' : districtPeakKmh >= 100 ? 'Severe' : districtPeakKmh >= 65 ? 'Moderate' : 'Low';
+      windValEl.textContent = `${severityWord} (${windSeverityPct}%)`;
+      windValEl.style.color = districtPeakKmh >= 100 ? '#DC2626' : districtPeakKmh >= 65 ? '#D97706' : '#2563EB';
+      windBarEl.style.width = `${windSeverityPct}%`;
+    }
+
+    // Update Surge Gauge Bar
+    const surgeHeightM = intersectedMatch ? (districtPeakKmh >= 130 ? '3.5 - 4.5m' : '2.0 - 3.0m') : '0.5 - 1.2m';
+    const surgePct = intersectedMatch ? (districtPeakKmh >= 130 ? 90 : 65) : 25;
+    const surgeValEl = document.getElementById('citizen-gauge-surge-val');
+    const surgeBarEl = document.getElementById('citizen-gauge-surge-bar');
+    if (surgeValEl && surgeBarEl) {
+      surgeValEl.textContent = `${surgeHeightM} Tidal Surge`;
+      surgeBarEl.style.width = `${surgePct}%`;
     }
   }
 
@@ -426,6 +550,10 @@ export class CitizenViewController {
   }
 
   invalidateSize() {
+    if (!this.hasLoaded) {
+      this.hasLoaded = true;
+      this.loadInitialData();
+    }
     if (this.map) {
       setTimeout(() => this.map.invalidateSize(), 80);
     } else {

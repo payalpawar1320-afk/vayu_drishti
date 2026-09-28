@@ -22,8 +22,8 @@ class CycloneApp {
     this.authManager = null;
     this.citizenController = null;
 
-    this.currentMode = 'historic'; // 'live' | 'historic'
-    this.currentStormId = 'AMPHAN';
+    this.currentMode = 'live'; // 'live' | 'historic'
+    this.currentStormId = 'LIVE_OPERATIONAL_CYCLONE_NIO';
     this.stormDetail = null;
     this.timelineData = [];
     this.currentStepIndex = 0;
@@ -212,27 +212,18 @@ class CycloneApp {
         ...storms2020.filter(s => !['AMPHAN','FANI','BIPARJOY','TAUKTAE','YAAS'].includes(s.storm_name))
       ];
 
-      // Infrastructure
-      try {
-        const infra = await API.getInfrastructureGeoJSON();
-        this.mapManager.renderInfrastructure(infra);
-      } catch (e) {
-        console.warn('Infrastructure data unavailable:', e);
-      }
+      // Infrastructure (non-blocking background load)
+      API.getInfrastructureGeoJSON()
+        .then(infra => this.mapManager.renderInfrastructure(infra))
+        .catch(e => console.warn('Infrastructure data unavailable:', e));
 
-      // Default to historic mode (Cyclone Amphan - Bay of Bengal benchmark)
-      this.currentMode = 'historic';
-      document.getElementById('btn-mode-historic')?.classList.add('active');
-      document.getElementById('btn-mode-live')?.classList.remove('active');
+      // Default to live operational mode (Live Model evaluation)
+      this.currentMode = 'live';
+      document.getElementById('btn-mode-live')?.classList.add('active');
+      document.getElementById('btn-mode-historic')?.classList.remove('active');
       const modeLbl = document.getElementById('source-mode-label');
-      if (modeLbl) modeLbl.textContent = 'Historical replay';
+      if (modeLbl) modeLbl.textContent = 'Live data';
       this.populateStormDropdown();
-      await this.selectStorm('AMPHAN');
-
-      // Initial Comparison
-      if (this.compareController) {
-        this.compareController.runComparison('AMPHAN', 'FANI');
-      }
     } catch (err) {
       console.error('Init error:', err);
     }

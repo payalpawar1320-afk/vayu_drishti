@@ -56,8 +56,14 @@ def get_storm_gis_exposure(
         raise HTTPException(status_code=404, detail=f"Cyclone '{storm_id}' not found.")
 
     pts = detail.track_points
-    init_idx = min(len(pts) - 1, max(3, forecast_step)) if forecast_step is not None else max(4, int(len(pts) * 0.6))
+    if forecast_step is not None:
+        init_idx = min(len(pts) - 1, max(0, forecast_step))
+    else:
+        init_idx = min(len(pts) - 1, max(0, int(len(pts) * 0.6)))
+
     history = pts[max(0, init_idx - 4) : init_idx + 1]
+    if len(history) < 2 and len(pts) >= 2:
+        history = pts[:2]
 
     # Generate forecast
     forecast_points = track_model.predict_track(history, horizons_hours=[6, 12, 18, 24, 36, 48])

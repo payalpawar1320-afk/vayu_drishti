@@ -14,6 +14,7 @@ export class CompareController {
     this.layer2 = L.layerGroup();
     this.storm1Data = null;
     this.storm2Data = null;
+    this.hasLoaded = false;
 
     this.initMaps();
     this.setupListeners();
@@ -89,6 +90,10 @@ export class CompareController {
   invalidateSize() {
     if (!this.map1 || !this.map2) {
       this.initMaps();
+    }
+    if (!this.hasLoaded) {
+      this.hasLoaded = true;
+      this.runComparison('AMPHAN', 'FANI');
     }
     setTimeout(() => {
       if (this.map1) this.map1.invalidateSize();

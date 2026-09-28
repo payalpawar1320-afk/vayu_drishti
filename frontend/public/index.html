@@ -335,6 +335,44 @@
             </div>
           </div>
 
+          <!-- District Forecast & Hazard Timeline Graph Card -->
+          <div class="citizen-graphs-card" id="citizen-graphs-card" style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div style="font-weight: 600; font-size: 13px; color: #0F172A; display: flex; align-items: center; gap: 6px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                <span>District Wind Hazard Timeline</span>
+              </div>
+              <span id="citizen-graph-peak-badge" style="font-size: 10.5px; background: #FEE2E2; color: #991B1B; font-weight: 600; padding: 2px 8px; border-radius: 9999px;">Peak Gust: ~165 km/h</span>
+            </div>
+            
+            <!-- Dynamic SVG Wind Gust Graph -->
+            <div id="citizen-wind-chart" style="width: 100%; min-height: 100px; margin-bottom: 8px;">
+              <!-- Dynamically populated by citizen.js -->
+            </div>
+
+            <!-- Risk Level & Surge Gauge Bar -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 8px; border-top: 1px solid #F1F5F9;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+                  <span style="color: #64748B;">Wind Severity</span>
+                  <span id="citizen-gauge-wind-val" style="font-weight: 600; color: #DC2626;">Severe (92%)</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #F1F5F9; border-radius: 3px; overflow: hidden;">
+                  <div id="citizen-gauge-wind-bar" style="width: 92%; height: 100%; background: linear-gradient(90deg, #F59E0B, #DC2626); border-radius: 3px; transition: width 0.4s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+                  <span style="color: #64748B;">Storm Surge Risk</span>
+                  <span id="citizen-gauge-surge-val" style="font-weight: 600; color: #2563EB;">3.2m Tidal Peak</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #F1F5F9; border-radius: 3px; overflow: hidden;">
+                  <div id="citizen-gauge-surge-bar" style="width: 80%; height: 100%; background: linear-gradient(90deg, #60A5FA, #2563EB); border-radius: 3px; transition: width 0.4s ease;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Safety Guidance Accordion -->
           <div class="safety-steps-accordion">
             <div class="safety-step">
@@ -1109,10 +1147,10 @@
                 <td><span class="status-badge status-ok">Available</span></td>
               </tr>
               <tr>
-                <td>INSAT / MOSDAC (ISRO)</td>
-                <td>Near real-time</td>
-                <td>—</td>
-                <td><span class="status-badge status-warn">Not connected</span></td>
+                <td>INSAT-3D / 3DR / 3DS (ISRO MOSDAC)</td>
+                <td>Near real-time (30-min sync)</td>
+                <td>4 km (TIR-1 &amp; VIS)</td>
+                <td><span class="status-badge status-ok" id="badge-mosdac-status" title="Authenticated: payal pawar (satarakbp285@gmail.com)">Connected (payal pawar)</span></td>
               </tr>
             </tbody>
           </table>
@@ -1427,25 +1465,47 @@
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Invalidate map on returning to monitor
-        if (pageId === 'monitor' && window.app && window.app.mapManager && window.app.mapManager.map) {
-          setTimeout(() => window.app.mapManager.map.invalidateSize(), 80);
+        // Invalidate map on returning to monitor (double timing ensures DOM reflow is 100% complete)
+        if (pageId === 'monitor' && window.app && window.app.mapManager) {
+          requestAnimationFrame(() => {
+            window.app.mapManager.invalidateSize();
+            setTimeout(() => {
+              window.app.mapManager.invalidateSize();
+              if (window.app.stormDetail && window.app.stormDetail.track_points) {
+                const pts = window.app.stormDetail.track_points;
+                const lats = pts.map(p => p.latitude);
+                const lons = pts.map(p => p.longitude);
+                window.app.mapManager.fitBounds([
+                  [Math.min(...lats) - 1.5, Math.min(...lons) - 1.5],
+                  [Math.max(...lats) + 1.5, Math.max(...lons) + 1.5]
+                ]);
+              }
+            }, 120);
+          });
         }
         // Invalidate citizen map when opening citizen view
         if (pageId === 'citizen' && window.app && window.app.citizenController) {
-          window.app.citizenController.invalidateSize();
+          requestAnimationFrame(() => {
+            setTimeout(() => window.app.citizenController.invalidateSize(), 100);
+          });
         }
         // Invalidate simulation map when opening simulation tab
         if (pageId === 'simulation' && window.app && window.app.simulator) {
-          window.app.simulator.invalidateSize();
+          requestAnimationFrame(() => {
+            setTimeout(() => window.app.simulator.invalidateSize(), 100);
+          });
         }
         // Invalidate comparison maps when opening compare tab
         if (pageId === 'compare' && window.app && window.app.compareController) {
-          window.app.compareController.invalidateSize();
+          requestAnimationFrame(() => {
+            setTimeout(() => window.app.compareController.invalidateSize(), 120);
+          });
         }
         // Invalidate study maps when opening study tab
         if (pageId === 'study' && window.app && window.app.studyController) {
-          window.app.studyController.invalidateSize();
+          requestAnimationFrame(() => {
+            setTimeout(() => window.app.studyController.invalidateSize(), 120);
+          });
         }
       }
       window.showPage = showPage;

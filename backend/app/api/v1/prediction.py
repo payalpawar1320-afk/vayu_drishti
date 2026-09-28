@@ -49,12 +49,13 @@ def get_prediction(
 
     pts = detail.track_points
     if forecast_init_step is not None:
-        init_idx = min(len(pts) - 1, max(3, forecast_init_step))
+        init_idx = min(len(pts) - 1, max(0, forecast_init_step))
     else:
-        # Default initialization ~24h prior to landfall / peak
-        init_idx = max(4, int(len(pts) * 0.6))
+        init_idx = min(len(pts) - 1, max(0, int(len(pts) * 0.6)))
 
     history_points = pts[max(0, init_idx - 4) : init_idx + 1]
+    if len(history_points) < 2 and len(pts) >= 2:
+        history_points = pts[:2]
     t0_pt = history_points[-1]
 
     # Predict track points

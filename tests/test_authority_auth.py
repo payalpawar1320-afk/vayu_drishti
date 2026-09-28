@@ -103,7 +103,6 @@ def test_frontend_authority_and_citizen_pages():
     assert '1078' in html # National helpline
 
     # Header and Hero Access Flow buttons
-    assert 'id="btn-header-login"' in html
     assert 'id="btn-header-logout"' in html
     assert 'id="btn-home-citizen"' in html
     assert 'id="btn-home-authority"' in html

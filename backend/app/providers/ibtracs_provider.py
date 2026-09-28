@@ -13,6 +13,8 @@ class IBTrACSProvider(DataProvider):
     Official NOAA IBTrACS v04r01 Data Provider for the North Indian Ocean basin.
     Provides verified historical ground-truth tracks, winds, pressures and lifecycle data.
     """
+    _cached_df: Optional[pd.DataFrame] = None
+    _cached_storm_index: Optional[Dict[str, Any]] = None
 
     def __init__(self, csv_path: Optional[Path] = None):
         if csv_path is None:
@@ -20,32 +22,37 @@ class IBTrACSProvider(DataProvider):
             csv_path = base_dir / "data" / "raw" / "ibtracs" / "ibtracs_NI_latest.csv"
         
         self.csv_path = Path(csv_path)
-        self._df = None
-        self._storm_index = {}
-        if self.csv_path.exists():
+        if IBTrACSProvider._cached_storm_index is None and self.csv_path.exists():
             self._load_data()
+        self._df = IBTrACSProvider._cached_df
+        self._storm_index = IBTrACSProvider._cached_storm_index or {}
 
     def _load_data(self):
+        if IBTrACSProvider._cached_storm_index is not None:
+            return
         print(f"[IBTrACSProvider] Loading dataset from {self.csv_path}...")
         # Skip row 1 which contains IBTrACS unit labels
-        self._df = pd.read_csv(self.csv_path, skiprows=[1], low_memory=False)
+        df = pd.read_csv(self.csv_path, skiprows=[1], low_memory=False)
         # Ensure LAT and LON are numeric
-        self._df['LAT'] = pd.to_numeric(self._df['LAT'], errors='coerce')
-        self._df['LON'] = pd.to_numeric(self._df['LON'], errors='coerce')
-        self._df['SEASON'] = pd.to_numeric(self._df['SEASON'], errors='coerce')
+        df['LAT'] = pd.to_numeric(df['LAT'], errors='coerce')
+        df['LON'] = pd.to_numeric(df['LON'], errors='coerce')
+        df['SEASON'] = pd.to_numeric(df['SEASON'], errors='coerce')
         
         # Build quick lookup by SID
-        valid = self._df.dropna(subset=['LAT', 'LON'])
+        storm_index = {}
+        valid = df.dropna(subset=['LAT', 'LON'])
         for sid, group in valid.groupby('SID'):
             name = str(group['NAME'].iloc[0]).strip().upper()
             if name != "NOT_NAMED" and name != "UNNAMED":
-                self._storm_index[sid] = {
+                storm_index[sid] = {
                     "name": name,
                     "season": int(group['SEASON'].iloc[0]) if not pd.isna(group['SEASON'].iloc[0]) else 0,
                     "subbasin": str(group['SUBBASIN'].iloc[0]).strip() if not pd.isna(group['SUBBASIN'].iloc[0]) else "NI",
                     "rows": group
                 }
-        print(f"[IBTrACSProvider] Successfully indexed {len(self._storm_index)} named storms.")
+        IBTrACSProvider._cached_df = df
+        IBTrACSProvider._cached_storm_index = storm_index
+        print(f"[IBTrACSProvider] Successfully indexed {len(storm_index)} named storms.")
 
     def get_storms(self, basin: Optional[str] = "NI", year: Optional[int] = None) -> List[StormSummary]:
         results = []

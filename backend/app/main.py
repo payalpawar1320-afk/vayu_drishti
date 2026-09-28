@@ -8,6 +8,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
+# Load .env configuration into environment
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    import os
+    with open(env_file, "r", encoding="utf-8") as f:
+        for line in f:
+            if "=" in line and not line.strip().startswith("#"):
+                k, v = line.strip().split("=", 1)
+                os.environ[k.strip()] = v.strip()
+
 from backend.app.api.v1 import (
     storms, observations, evolution, prediction, gis, scenario, models, system, auth
 )
@@ -43,6 +53,15 @@ app.include_router(scenario.router, prefix=API_V1_PREFIX)
 app.include_router(models.router, prefix=API_V1_PREFIX)
 app.include_router(system.router, prefix=API_V1_PREFIX)
 
+@app.get("/health")
+@app.get("/api/v1/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "service": "vayu-drishti",
+        "mode": "operational"
+    }
+
 @app.get("/api")
 def api_root():
     return {
@@ -50,6 +69,7 @@ def api_root():
         "version": "1.0.0",
         "docs": "/docs",
         "api_v1_endpoints": {
+            "health": "/health",
             "auth": "/api/v1/auth",
             "storms": "/api/v1/storms",
             "observations": "/api/v1/observations",

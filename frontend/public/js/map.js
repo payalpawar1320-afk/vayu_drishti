@@ -9,7 +9,7 @@ export class CycloneMapManager {
     this.containerId = mapContainerId;
     this.map = null;
     this.currentDate = '2020-05-18';
-    this.activeBasemapMode = 'nasa-truecolor'; // Default to real NASA satellite
+    this.activeBasemapMode = 'light-grey'; // Default to fast, razor-sharp Carto Voyager basemap
     
     // Basemap tile layers
     this.basemaps = {};
@@ -67,7 +67,7 @@ export class CycloneMapManager {
       }
     );
 
-    // 3. Clean Light Grey Basemap
+    // 3. Clean Light Grey Basemap (Fast, sharp, zero-delay CDN)
     this.basemaps['light-grey'] = this.basemaps['voyager'];
 
     // 4. NASA GIBS MODIS True-Color Real Satellite Layer (backed by Esri Imagery so never blackout)
@@ -113,15 +113,15 @@ export class CycloneMapManager {
       { maxZoom: 18, subdomains: 'abcd', attribution: '&copy; CARTO' }
     );
 
-    // Reference boundary overlay (countries & coastlines) - crisp, no watermark
+    // Reference boundary overlay (countries & coastlines) - used ONLY in satellite view to prevent hazing
     this.bordersLayer = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 16,
-        opacity: 0.9,
+        opacity: 0.85,
         zIndex: 500
       }
-    ).addTo(this.map);
+    );
 
     // Default to clean, beautiful Carto Voyager / Light Grey basemap
     this.activeBasemapMode = 'light-grey';
@@ -134,12 +134,29 @@ export class CycloneMapManager {
     this.initCoastalPlaceMarkers();
   }
 
+  invalidateSize() {
+    if (this.map) {
+      this.map.invalidateSize();
+    }
+  }
+
   setBasemap(mode) {
     if (!this.basemaps[mode] || mode === this.activeBasemapMode) return;
     this.map.removeLayer(this.basemaps[this.activeBasemapMode]);
     this.activeBasemapMode = mode;
     this.basemaps[mode].addTo(this.map);
     this.basemaps[mode].bringToBack();
+
+    // Toggle border reference overlay only for satellite modes
+    if (mode === 'esri-sat' || mode.startsWith('nasa-')) {
+      if (!this.map.hasLayer(this.bordersLayer)) {
+        this.bordersLayer.addTo(this.map);
+      }
+    } else {
+      if (this.map.hasLayer(this.bordersLayer)) {
+        this.map.removeLayer(this.bordersLayer);
+      }
+    }
   }
 
   setSatelliteDate(dateIso) {

@@ -39,8 +39,10 @@ def simulate_impact_shift(request: ScenarioShiftRequest = Body(...)):
         raise HTTPException(status_code=404, detail=f"Cyclone '{request.storm_id}' not found.")
 
     pts = detail.track_points
-    init_idx = max(4, int(len(pts) * 0.6))
+    init_idx = min(len(pts) - 1, max(0, int(len(pts) * 0.6)))
     history = pts[max(0, init_idx - 4) : init_idx + 1]
+    if len(history) < 2 and len(pts) >= 2:
+        history = pts[:2]
 
     # Forecast points
     forecast_points = track_model.predict_track(history, horizons_hours=[6, 12, 18, 24, 36, 48])
