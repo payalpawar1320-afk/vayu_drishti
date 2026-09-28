@@ -57,17 +57,16 @@ export class CycloneMapManager {
     );
     this.basemaps['esri-sat'] = makeSatelliteCanvas();
 
-    // 2. Carto Voyager (Vivid, crystal-clear geographical map with oceans, cities & terrain)
+    // 2. OpenStreetMap Standard (Fast, vivid, 100% free, zero watermark)
     this.basemaps['voyager'] = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
-        maxZoom: 18,
-        subdomains: 'abcd',
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
       }
     );
 
-    // 3. Clean Light Grey Basemap (Fast, sharp, zero-delay CDN)
+    // 3. Clean Light Grey Basemap
     this.basemaps['light-grey'] = this.basemaps['voyager'];
 
     // 4. NASA GIBS MODIS True-Color Real Satellite Layer (backed by Esri Imagery so never blackout)
@@ -109,8 +108,8 @@ export class CycloneMapManager {
 
     // 7. Tactical Dark Canvas Basemap
     this.basemaps['dark'] = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      { maxZoom: 18, subdomains: 'abcd', attribution: '&copy; CARTO' }
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 16, attribution: 'Tiles &copy; Esri' }
     );
 
     // Reference boundary overlay (countries & coastlines) - used ONLY in satellite view to prevent hazing

@@ -41,11 +41,11 @@ export class SimulatorController {
       attributionControl: false
     });
 
-    // Vivid Carto Voyager Basemap
-    L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-      { maxZoom: 18, subdomains: 'abcd' }
-    ).addTo(this.simMap);
+    // OpenStreetMap standard tile layer (100% free, zero watermark)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(this.simMap);
 
     // Add feature layer groups
     Object.values(this.layers).forEach(l => l.addTo(this.simMap));

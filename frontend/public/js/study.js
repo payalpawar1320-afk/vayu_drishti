@@ -50,10 +50,10 @@ export class StudyController {
         this.trackMap = null;
       }
       this.trackMap = L.map('chart-track-map', mapOptions);
-      L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-        { maxZoom: 18, subdomains: 'abcd' }
-      ).addTo(this.trackMap);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(this.trackMap);
 
       Object.values(this.trackLayers).forEach(l => l.addTo(this.trackMap));
     }
@@ -65,10 +65,10 @@ export class StudyController {
         this.obsVsPredMap = null;
       }
       this.obsVsPredMap = L.map('chart-obs-vs-pred', mapOptions);
-      L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-        { maxZoom: 18, subdomains: 'abcd' }
-      ).addTo(this.obsVsPredMap);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(this.obsVsPredMap);
 
       Object.values(this.comparisonLayers).forEach(l => l.addTo(this.obsVsPredMap));
     }

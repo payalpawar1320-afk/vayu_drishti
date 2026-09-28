@@ -48,18 +48,18 @@ export class CompareController {
 
     // Initialize Map 1
     this.map1 = L.map('compare-map-1', mapOptions);
-    L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-      { maxZoom: 18, subdomains: 'abcd' }
-    ).addTo(this.map1);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(this.map1);
     this.layer1 = L.layerGroup().addTo(this.map1);
 
     // Initialize Map 2
     this.map2 = L.map('compare-map-2', mapOptions);
-    L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-      { maxZoom: 18, subdomains: 'abcd' }
-    ).addTo(this.map2);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(this.map2);
     this.layer2 = L.layerGroup().addTo(this.map2);
   }
 
@@ -91,9 +91,10 @@ export class CompareController {
     if (!this.map1 || !this.map2) {
       this.initMaps();
     }
-    if (!this.hasLoaded) {
-      this.hasLoaded = true;
-      this.runComparison('AMPHAN', 'FANI');
+    const s1 = document.getElementById('compare-storm-1')?.value || 'AMPHAN';
+    const s2 = document.getElementById('compare-storm-2')?.value || 'FANI';
+    if (!this.storm1Data || !this.storm2Data) {
+      this.runComparison(s1, s2);
     }
     const update = () => {
       if (this.map1) this.map1.invalidateSize();
