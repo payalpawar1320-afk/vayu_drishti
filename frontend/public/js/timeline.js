@@ -9,7 +9,7 @@ export class TimelinePlayer {
     this.currentIndex = 0;
     this.isPlaying = false;
     this.timer = null;
-    this.playbackIntervalMs = 800; // 800ms per step default
+    this.playbackIntervalMs = 550; // Smooth 550ms per step default
 
     this.onStepChange = options.onStepChange || (() => {});
     this.onPlayStateChange = options.onPlayStateChange || (() => {});
@@ -23,6 +23,10 @@ export class TimelinePlayer {
 
   play() {
     if (this.isPlaying || this.steps.length === 0) return;
+    if (this.currentIndex >= this.steps.length - 1) {
+      // If at or past the end, start immediately from the beginning
+      this.setStep(0);
+    }
     this.isPlaying = true;
     this.onPlayStateChange(true);
 
@@ -30,7 +34,7 @@ export class TimelinePlayer {
       if (this.currentIndex < this.steps.length - 1) {
         this.setStep(this.currentIndex + 1);
       } else {
-        // Loop back to start or pause
+        // Smoothly loop back to start
         this.setStep(0);
       }
     }, this.playbackIntervalMs);
@@ -56,13 +60,19 @@ export class TimelinePlayer {
   setStep(index) {
     if (index < 0 || index >= this.steps.length) return;
     this.currentIndex = index;
-    this.onStepChange(this.steps[this.currentIndex], this.currentIndex, this.steps.length);
+    try {
+      this.onStepChange(this.steps[this.currentIndex], this.currentIndex, this.steps.length);
+    } catch (err) {
+      console.warn('Error in onStepChange callback:', err);
+    }
   }
 
   stepForward() {
     this.pause();
     if (this.currentIndex < this.steps.length - 1) {
       this.setStep(this.currentIndex + 1);
+    } else {
+      this.setStep(0);
     }
   }
 
@@ -70,6 +80,8 @@ export class TimelinePlayer {
     this.pause();
     if (this.currentIndex > 0) {
       this.setStep(this.currentIndex - 1);
+    } else {
+      this.setStep(this.steps.length - 1);
     }
   }
 

@@ -5,7 +5,7 @@
 
 import { API, AuthState } from './api.js';
 import { CycloneMapManager } from './map.js?v=3';
-import { TimelinePlayer } from './timeline.js';
+import { TimelinePlayer } from './timeline.js?v=2';
 import { SimulatorController } from './simulator.js';
 import { CompareController } from './compare.js';
 import { StudyController } from './study.js';
@@ -58,7 +58,16 @@ class CycloneApp {
       onStepChange: (step, index, total) => this.handleTimelineStepChange(step, index, total),
       onPlayStateChange: (isPlaying) => {
         const btn = document.getElementById('btn-play-pause');
-        if (btn) btn.innerHTML = isPlaying ? '&#9646;&#9646; Pause' : '&#9654; Play';
+        if (btn) {
+          btn.innerHTML = isPlaying ? '&#9646;&#9646; Pause' : '&#9654; Play';
+          if (isPlaying) {
+            btn.style.background = '#b91c1c';
+            btn.style.borderColor = '#b91c1c';
+          } else {
+            btn.style.background = '';
+            btn.style.borderColor = '';
+          }
+        }
       }
     });
 
@@ -74,7 +83,7 @@ class CycloneApp {
     });
 
     this.setupEventListeners();
-    this.populateStormDropdown();
+    this.populateStormDropdown(false);
     this.selectStorm('AMPHAN');
     this.loadInitialData();
   }
@@ -298,6 +307,7 @@ class CycloneApp {
   }
 
   async handleTimelineStepChange(step, index, total) {
+    if (!step) return;
     this.currentStepIndex = index;
 
     const slider = document.getElementById('timeline-slider');
@@ -315,10 +325,24 @@ class CycloneApp {
     if (srcTime) srcTime.textContent = this.formatUTCDate(step.iso_time);
 
     // Sync satellite overlay date
-    this.mapManager.setSatelliteDate(step.iso_time);
+    if (this.mapManager && step.iso_time) {
+      this.mapManager.setSatelliteDate(step.iso_time);
+    }
 
     // Render track up to this point
-    this.mapManager.renderObservedTrack(this.stormDetail.track_points, index);
+    if (this.mapManager) {
+      const pts = this.stormDetail?.track_points || this.timelineData;
+      if (pts && pts.length > 0) {
+        const normPts = pts.map(p => ({
+          latitude: p.latitude !== undefined ? p.latitude : p.lat,
+          longitude: p.longitude !== undefined ? p.longitude : p.lon,
+          max_sustained_wind_kt: p.max_sustained_wind_kt !== undefined ? p.max_sustained_wind_kt : p.wind_kt,
+          min_central_pressure_mb: p.min_central_pressure_mb !== undefined ? p.min_central_pressure_mb : p.pressure_mb,
+          iso_time: p.iso_time
+        }));
+        this.mapManager.renderObservedTrack(normPts, index);
+      }
+    }
 
     // Wind / pressure
     const windKt  = step.wind_speed_kt || step.wind_kt || 45;
@@ -330,13 +354,27 @@ class CycloneApp {
     this.setText('val-pres-mb',        `${pres} hPa`);
     this.setText('hero-category-badge', catInfo.name);
     this.setText('val-movement',       step.movement_direction || '—');
+
+    const lat = step.latitude !== undefined ? step.latitude : step.lat;
+    const lon = step.longitude !== undefined ? step.longitude : step.lon;
     this.setText('val-coords',
-      step.latitude && step.longitude
-        ? `${step.latitude.toFixed(2)}°N, ${step.longitude.toFixed(2)}°E`
+      (lat !== undefined && lon !== undefined)
+        ? `${Number(lat).toFixed(2)}°N, ${Number(lon).toFixed(2)}°E`
         : '—'
     );
 
-    document.getElementById('hero-category-badge').style.color = catInfo.color;
+    const catBadge = document.getElementById('hero-category-badge');
+    if (catBadge) catBadge.style.color = catInfo.color;
+
+    // Smoothly update prediction track and GIS exposure as storm advances
+    this.debouncedPredictionUpdate(index);
+  }
+
+  debouncedPredictionUpdate(stepIndex) {
+    if (this._predTimer) clearTimeout(this._predTimer);
+    this._predTimer = setTimeout(() => {
+      this.loadPredictionAndGIS(stepIndex);
+    }, 250);
   }
 
   async loadPredictionAndGIS(stepIndex) {
